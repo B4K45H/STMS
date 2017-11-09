@@ -1,0 +1,4 @@
+/*for removing left border from print*/
+.content-wrapper {
+border-left: none ! important;
+}
