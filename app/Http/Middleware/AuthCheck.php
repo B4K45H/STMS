@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Auth;
 
 class AuthCheck
 {
@@ -15,6 +16,11 @@ class AuthCheck
      */
     public function handle($request, Closure $next)
     {
-        return $next($request);
+        if(Auth::check()) {
+            return $next($request);
+        } else {
+            return redirect(route('login'))->with("message","Session expired. Login to continue.")
+                                                ->with("alert-class","alert-danger");
+        }
     }
 }

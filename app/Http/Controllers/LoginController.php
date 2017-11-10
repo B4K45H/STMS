@@ -54,7 +54,7 @@ class LoginController extends Controller
             } else if(!empty($user->valid_till) && (($userValidDate - $today) <= 172800)){
                 return redirect(route('user-dashboard'))->with("message",("Welcome " . $user->name . ". Your trial pack ends on " . $user->valid_till . ". Please contact developer team for more info."))->with("alert-class","alert-warning");
             }
-            return redirect(route('dashboard'))->with("message","Welcome " . $user->name . ". You are successfully logged in to the Quarry Manager.")->with("alert-class","alert-success");
+            return redirect(route('dashboard'))->with("message","Welcome " . $user->name . ". You are successfully logged in to the School Timetable Managemet System.")->with("alert-class","alert-success");
         } else {
             // Authentication fails...
             return redirect(route('login'))->with("message","Login failed. Incorrect user name and password.")->with("alert-class","alert-danger");

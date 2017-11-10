@@ -19,7 +19,7 @@
     <div class="login-logo">
         <div>
             <b>
-                Welcome To WholeSale Store Manager
+                Welcome To </br>School Timetable Management System
             </b>
         </div>
     </div>

@@ -1,9 +1,9 @@
 <!-- Logo -->
 <div class="logo">
     <!-- mini logo for sidebar mini 50x50 pixels -->
-    <span class="logo-mini"><b>WSM</b></span>
+    <span class="logo-mini"><b>STMS</b></span>
     <!-- logo for regular state and mobile devices -->
-    <span class="logo-lg"><b>WSM</b></span>
+    <span class="logo-lg"><b>STMS</b></span>
 </div>
 <!-- Header Navbar: style can be found in header.less -->
 <nav class="navbar navbar-static-top">
@@ -17,13 +17,13 @@
             <!-- User Account: style can be found in dropdown.less -->
             <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <img src="{{ $currentUser->image }}" class="user-image" alt="User Image">
+                    <img src="/images/user/default_user.jpg" class="user-image" alt="User Image">
                     <span class="hidden-xs">{{ $currentUser->name }}</span>
                 </a>
                 <ul class="dropdown-menu">
                     <!-- User image -->
                     <li class="user-header">
-                        <img src="{{ $currentUser->image }}" class="img-circle" alt="User Image">
+                        <img src="/images/user/default_user.jpg" class="img-circle" alt="User Image">
                         <p>
                             {{ $currentUser->name }}
                             <small>

@@ -19,7 +19,7 @@
     <div class="login-logo">
         <div>
             <b style="color: white;">
-                WSM
+                STMS
             </b>
         </div>
     </div>

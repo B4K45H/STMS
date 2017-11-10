@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
-
+use Auth;
 class IsGuest
 {
     /**
@@ -15,6 +15,11 @@ class IsGuest
      */
     public function handle($request, Closure $next)
     {
-        return $next($request);
+        if(!Auth::check()) {
+            return $next($request);            
+        } else {
+            return redirect(route('dashboard'))->with("message","Unauthorized action!. You are not authorized to access the page you requested")
+                                                    ->with("alert-class","alert-danger");
+        }
     }
 }

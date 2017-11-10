@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-//use App\Http\Requests\ProductRegistrationRequest;
-use App\Models\Subject;
 use App\Models\Standard;
+use App\Models\Division;
+use App\Models\ClassRoom;
+use App\Models\Teacher;
+use App\Models\Subject;
 
-class SubjectController extends Controller
+class ClassRoomController extends Controller
 {
     /**
      * Return view for product registration
@@ -15,10 +17,15 @@ class SubjectController extends Controller
     public function register()
     {
         $standards  = Standard::where('status', 1)->get();
+        $divisions  = Division::where('status', 1)->get();
+        $teachers   = Teacher::where('status', 1)->get();
+        $subjects   = Subject::where('status', 1)->get();
 
-        return view('subject.register',
-            [
+        return view('classroom.register', [
                 'standards' => $standards,
+                'divisions' => $divisions,
+                'teachers'  => $teachers,
+                'subjects'  => $subjects
             ]);
     }
 
@@ -56,13 +63,13 @@ class SubjectController extends Controller
      */
     public function list()
     {
-        $subjects = Subject::where('status', 1)->paginate(15);
-        if(empty($subjects) || count($subjects) == 0) {
-            session()->flash('message', 'No subjects available to show!');
+        $classRooms = ClassRoom::where('status', 1)->paginate(15);
+        if(empty($classRooms) || count($classRooms) == 0) {
+            session()->flash('message', 'No classes available to show!');
         }
         
-        return view('subject.list',[
-            'subjects' => $subjects
+        return view('classroom.list',[
+            'classRooms' => $classRooms
         ]);
     }
 }
