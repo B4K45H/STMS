@@ -49,11 +49,23 @@
                                                 <tr>
                                                     <td>{{ $index + $subjects->firstItem() }}</td>
                                                     <td>{{ $subject->subject_name }}</td>
-                                                    <td>{{ $subject->category_id }}</td>
-                                                    <td>{{ $subject->description }}</td>
+                                                    @if($subject->category_id == 1)
+                                                        <td>Language</td>
+                                                    @elseif($subject->category_id == 2)
+                                                        <td>Science</td>
+                                                    @elseif($subject->category_id == 3)
+                                                        <td>Extra Curricular</td>
+                                                    @else
+                                                        <td>Moral</td>
+                                                    @endif
+                                                    <td>{{ !empty($subject->description) ? $subject->description : "Nil" }}</td>
                                                     <td>
-                                                        @foreach($subject->standards as $standard)
-                                                            <b>{{ $standard->standard_name }}</b>, 
+                                                        @foreach($subject->standards as $index => $standard)
+                                                            @if(($index+1) >= count($subject->standards))
+                                                                <b>{{ $standard->standard_name }}</b>
+                                                            @else
+                                                                <b>{{ $standard->standard_name }}</b>, 
+                                                            @endif
                                                         @endforeach
                                                     </td>
                                                 </tr>

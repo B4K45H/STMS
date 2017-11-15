@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Teacher Level Timetable')
+@section('title', 'Substitution')
 @section('content')
 <div class="content-wrapper">
      <section class="content-header">
@@ -36,7 +36,7 @@
                                 <div class="col-md-1"></div>
                                 <div class="col-md-10">
                                     <div class="form-group">
-                                        <div class="col-sm-10 {{ !empty($errors->first('teacher_id')) ? 'has-error' : '' }}">
+                                        <div class="col-sm-6 {{ !empty($errors->first('teacher_id')) ? 'has-error' : '' }}">
                                             <label for="teacher_id" class="control-label">Teacher : </label>
                                             <select class="form-control" name="teacher_id" id="teacher_id" tabindex="3" style="width: 100%">
                                                 <option value="">Select teacher</option>
@@ -49,16 +49,31 @@
                                             @if(!empty($errors->first('teacher_id')))
                                                 <p style="color: red;" >{{$errors->first('teacher_id')}}</p>
                                             @endif
-                                            <div class="clearfix"></div><br>
-                                        <div class="row">
-                                            <div class="col-md-4"></div>
-                                            <div class="col-md-2">
-                                                <button type="reset" class="btn btn-default btn-block btn-flat"  value="reset" tabindex="10">Clear</button>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <button type="submit" class="btn btn-primary btn-block btn-flat submit-button" tabindex="4"><i class="fa fa-search"></i> Search</button>
-                                            </div>
                                         </div>
+                                        <div class="col-sm-6 {{ !empty($errors->first('day_index')) ? 'has-error' : '' }}">
+                                            <label for="day_index" class="control-label">Week Day : </label>
+                                            <select class="form-control" name="day_index" id="day_index" tabindex="3" style="width: 100%">
+                                                <option value="">Select day</option>
+                                                <option value="1">Monday</option>
+                                                <option value="2">Tuesday</option>
+                                                <option value="3">Wednesday</option>
+                                                <option value="4">Thursday</option>
+                                                <option value="5">Friday</option>
+                                                <option value="6">Saturday</option>
+                                            </select>
+                                            @if(!empty($errors->first('day_index')))
+                                                <p style="color: red;" >{{$errors->first('day_index')}}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div><br>
+                                    <div class="row">
+                                        <div class="col-md-4"></div>
+                                        <div class="col-md-2">
+                                            <button type="reset" class="btn btn-default btn-block btn-flat"  value="reset" tabindex="10">Clear</button>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="submit" class="btn btn-primary btn-block btn-flat submit-button" tabindex="4"><i class="fa fa-search"></i> Search</button>
                                         </div>
                                     </div>
                                 </div>
@@ -98,7 +113,16 @@
                                         @foreach($timetable as $record)
                                             @if($session->id == $record->session_id)
                                             <?php $flag[$session->id] = 1; ?>
-                                                <td><b>{{ $record->combination->classRoom->standard->standard_name }}-{{ $record->combination->classRoom->division->division_name }}</b> / {{ $record->combination->subject->subject_name }}</td>
+                                                <td>
+                                                    <select class="form-control" name="teacher_id" id="teacher_id" tabindex="3" style="width: 100%">
+                                                        <option value="">Select teacher</option>
+                                                        @if(!empty($teachers) && (count($teachers) > 0))
+                                                            @foreach($teachers as $teacher)
+                                                                <option value="{{ $teacher->id }}" {{ ((old('teacher_id') == $teacher->id )) ? 'selected' : '' }}>{{ $teacher->name }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                </td>
                                             @endif
                                         @endforeach
                                         @if(empty($flag[$session->id]))

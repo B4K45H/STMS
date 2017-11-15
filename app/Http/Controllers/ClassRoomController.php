@@ -8,6 +8,7 @@ use App\Models\Division;
 use App\Models\ClassRoom;
 use App\Models\Teacher;
 use App\Models\Subject;
+use App\Models\Combination;
 
 class ClassRoomController extends Controller
 {
@@ -30,32 +31,52 @@ class ClassRoomController extends Controller
     }
 
      /**
-     * Handle new product registration
+     * Handle new class room registration
      */
-    public function registerAction()
+    public function registerAction(Request $request)
     {
-        /*$categoryId     = $request->get('category_id');
-        $name           = $request->get('name');
-        $productCode    = $request->get('product_code');
-        $description    = $request->get('description');
-        $measureUnit    = $request->get('measure_unit');
-        $sgst           = $request->get('sgst');
-        $cgst           = $request->get('cgst');
-
-        $product = new Product;
-        $product->category_id   = $categoryId;
-        $product->name          = $name;
-        $product->gst_code      = $productCode;
-        $product->description   = $description;
-        $product->unit          = $measureUnit;
-        $product->sgst          = $sgst;
-        $product->cgst          = $cgst;
-        $product->status        = 1;
-        if($product->save()) {
-            return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
+        $combinationArr = [];
+        $roomNumber         = $request->get('room_number');
+        $standardId         = $request->get('standard_id');
+        $divisionId         = $request->get('division_id');
+        $strength           = $request->get('strength');
+        $teacherInchargeId  = $request->get('teacher_incharge_id');
+        $subjects           = $request->get('subjects');
+        $teacherId          = $request->get('teacher_id');
+//dd($teacherId);
+        $classRoom = new ClassRoom;
+        $classRoom->standard_id = $standardId;
+        $classRoom->division_id = $divisionId;
+        $classRoom->room_id     = $roomNumber;
+        $classRoom->strength    = $strength;
+        $classRoom->incharge_id = $teacherInchargeId;
+        $classRoom->status      = 1;
+        if($classRoom->save()) {
+            foreach ($subjects as $key => $subject) {
+                $combinationArr[] = [
+                    'class_room_id' => $classRoom->id,
+                    'subject_id'    => $subject,
+                    'teacher_id'    => $teacherId[$subject][1],
+                    'status'        => 1
+                ];
+                if(!empty($teacherId[$subject][2])) {
+                    $combinationArr[] = [
+                        'class_room_id' => $classRoom->id,
+                        'subject_id'    => $subject,
+                        'teacher_id'    => $teacherId[$subject][2],
+                        'status'        => 1
+                    ];
+                }
+            }
+            if(Combination::insert($combinationArr)) {
+                return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
+            } else {
+                $classRoom->delete();
+                return redirect()->back()->withInput()->with("message","Failed to save the class details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+            }
         } else {
-            return redirect()->back()->withInput()->with("message","Failed to save the product details. Try again after reloading the page!<small class='pull-right'> #05/02</small>")->with("alert-class","alert-danger");
-        }*/
+            return redirect()->back()->withInput()->with("message","Failed to save the class details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+        }
     }
 
     /**
@@ -70,6 +91,28 @@ class ClassRoomController extends Controller
         
         return view('classroom.list',[
             'classRooms' => $classRooms
+        ]);
+    }
+
+    /**
+     * Return view for combination details listing
+     */
+    public function combinationList($classRoomId)
+    {
+        $className      = '';
+        $combinations   = Combination::where('class_room_id', $classRoomId)->where('status', 1)->get();
+        if(empty($combinations) || count($combinations) == 0) {
+            session()->flash('message', 'No combinations available to show!');
+        }
+
+        $classRoom = ClassRoom::where('id', $classRoomId)->first();
+        if(!empty($classRoom) && !empty($classRoom->id)) {
+            $className = $classRoom->standard->standard_name. " - ". $classRoom->division->division_name;
+        }
+        
+        return view('classroom.combination',[
+            'combinations' => $combinations,
+            'className'    =>  $className
         ]);
     }
 }

@@ -23,32 +23,39 @@ class SubjectController extends Controller
     }
 
      /**
-     * Handle new product registration
+     * Handle new subject registration
      */
-    public function registerAction()
+    public function registerAction(Request $request)
     {
-        /*$categoryId     = $request->get('category_id');
-        $name           = $request->get('name');
-        $productCode    = $request->get('product_code');
-        $description    = $request->get('description');
-        $measureUnit    = $request->get('measure_unit');
-        $sgst           = $request->get('sgst');
-        $cgst           = $request->get('cgst');
+        $standardSubjectArr = [];
+        $name               = $request->get('subject_name');
+        $categoryId         = $request->get('subject_category_id');
+        $description        = $request->get('description');
+        $standards          = $request->get('standard');
+        $noOfSessionPerWeek = $request->get('no_of_session_per_week');
 
-        $product = new Product;
-        $product->category_id   = $categoryId;
-        $product->name          = $name;
-        $product->gst_code      = $productCode;
-        $product->description   = $description;
-        $product->unit          = $measureUnit;
-        $product->sgst          = $sgst;
-        $product->cgst          = $cgst;
-        $product->status        = 1;
-        if($product->save()) {
-            return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
+        $subject = new Subject;
+        $subject->subject_name  = $name;
+        $subject->category_id   = $categoryId;
+        $subject->description   = $description;
+        $subject->status        = 1;
+        if($subject->save()) {
+            foreach ($standards as $key => $standard) {
+                $standardSubjectArr[] = [
+                    'standard_id'               => $standard,
+                    'subject_id'                => $subject->id,
+                    'no_of_session_per_week'    => $noOfSessionPerWeek[$standard]
+                ];
+            }
+            if($subject->standards()->sync($standardSubjectArr)) {
+                return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
+            } else {
+                $subject->delete();
+                return redirect()->back()->withInput()->with("message","Failed to save the subject details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+            }
         } else {
-            return redirect()->back()->withInput()->with("message","Failed to save the product details. Try again after reloading the page!<small class='pull-right'> #05/02</small>")->with("alert-class","alert-danger");
-        }*/
+            return redirect()->back()->withInput()->with("message","Failed to save the subject details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+        }
     }
 
     /**
@@ -56,7 +63,7 @@ class SubjectController extends Controller
      */
     public function list()
     {
-        $subjects = Subject::where('status', 1)->paginate(15);
+        $subjects = Subject::where('status', 1)->with('standards')->paginate(15);
         if(empty($subjects) || count($subjects) == 0) {
             session()->flash('message', 'No subjects available to show!');
         }

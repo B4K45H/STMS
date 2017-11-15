@@ -36,18 +36,18 @@
                                 <div class="col-md-1"></div>
                                 <div class="col-md-10">
                                     <div class="form-group">
-                                        <div class="col-sm-10 {{ !empty($errors->first('account_id')) ? 'has-error' : '' }}">
-                                            <label for="account_id" class="control-label">Class : </label>
-                                            <select class="form-control" name="account_id" id="account_id" tabindex="3" style="width: 100%">
+                                        <div class="col-sm-10 {{ !empty($errors->first('class_room_id')) ? 'has-error' : '' }}">
+                                            <label for="class_room_id" class="control-label">Class : </label>
+                                            <select class="form-control" name="class_room_id" id="class_room_id" tabindex="3" style="width: 100%">
                                                 <option value="">Select class</option>
-                                                @if(!empty($accounts) && (count($accounts) > 0))
-                                                    @foreach($accounts as $account)
-                                                        <option value="{{ $account->id }}" {{ ((old('account_id') == $account->id ) || $accountId == $account->id) ? 'selected' : '' }}>{{ $account->account_name }}</option>
+                                                @if(!empty($classRooms) && (count($classRooms) > 0))
+                                                    @foreach($classRooms as $classRoom)
+                                                        <option value="{{ $classRoom->id }}" {{ ((old('class_room_id') == $classRoom->id )) ? 'selected' : '' }}>{{ $classRoom->standard->standard_name }} - {{ $classRoom->division->division_name }}</option>
                                                     @endforeach
                                                 @endif
                                             </select>
-                                            @if(!empty($errors->first('account_id')))
-                                                <p style="color: red;" >{{$errors->first('account_id')}}</p>
+                                            @if(!empty($errors->first('class_room_id')))
+                                                <p style="color: red;" >{{$errors->first('class_room_id')}}</p>
                                             @endif
                                             <div class="clearfix"></div><br>
                                         <div class="row">
@@ -74,7 +74,7 @@
             <div class="col-md-12">
                 <div class="box">
                     <div class="box-header">
-                        <h3 class="box-title">Timetable for class : <b>VI A</b></h3>
+                        <h3 class="box-title">Timetable for class : {{ !empty($selectedClassRoomName) ? $selectedClassRoomName : "Nil" }}<b></b></h3>
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body">
@@ -83,67 +83,31 @@
                                 <table class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
-                                            <th style="width: 16%;"></th>
-                                            <th style="width: 12%;"><b>1</b></th>
-                                            <th style="width: 12%;"><b>2</b></th>
-                                            <th style="width: 12%;"><b>3</b></th>
-                                            <th style="width: 12%;"><b>4</b></th>
-                                            <th style="width: 12%;"><b>5</b></th>
-                                            <th style="width: 12%;"><b>6</b></th>
-                                            <th style="width: 12%;"><b>7</b></th>
+                                            <th style="width: 12%;"></th>
+                                            @for($i=1; $i <=$noOfSession; $i++)
+                                                <th style="width: {{ 88/$noOfSession }}%;"><b>{{ $i }}</b></th>
+                                            @endfor
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td><b>Monday</b></td>
-                                            <td>English</td>
-                                            <td>Social Science</td>
-                                            <td>Mathematics</td>
-                                            <td>Malayalam</td>
-                                            <td>Moral Science</td>
-                                            <td>Science</td>
-                                            <td>P.T.</td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Tuesday</b></td>
-                                            <td>English</td>
-                                            <td>Science</td>
-                                            <td>Mathematics</td>
-                                            <td>G.K.</td>
-                                            <td>Malayalam</td>
-                                            <td>C.E.</td>
-                                            <td>Social Science</td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Wednesday</b></td>
-                                            <td>Science</td>
-                                            <td>Malayalam</td>
-                                            <td>Mathematics</td>
-                                            <td>Social Science</td>
-                                            <td>Moral Science</td>
-                                            <td>English</td>
-                                            <td>Hindi</td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Thursday</b></td>
-                                            <td>Mathematics</td>
-                                            <td>Science</td>
-                                            <td>English</td>
-                                            <td>Hindi</td>
-                                            <td>Malayalam</td>
-                                            <td>C.E.</td>
-                                            <td>Social Science</td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Friday</b></td>
-                                            <td>Science</td>
-                                            <td>Mathematics</td>
-                                            <td>English</td>
-                                            <td>Hindi</td>
-                                            <td>Malayalam</td>
-                                            <td>Moral Science</td>
-                                            <td>Social Science</td>
-                                        </tr>
+                                    @foreach($sessions as $index => $session)
+                                        @if((($index +1)%$noOfSession) == 1)
+                                            <tr>
+                                                <td><b>{{ $session->day_name }}</b></td>
+                                        @endif
+                                        @foreach($timetable as $record)
+                                            @if($session->id == $record->session_id)
+                                            <?php $flag[$session->id] = 1; ?>
+                                                <td><b>{{ $record->combination->subject->subject_name }}</b> / {{ $record->combination->teacher->name }}</td>
+                                            @endif
+                                        @endforeach
+                                        @if(empty($flag[$session->id]))
+                                            <td>-</td>
+                                        @endif
+                                        @if((($index +1)%$noOfSession) == 0)
+                                            </tr>
+                                        @endif
+                                    @endforeach
                                     </tbody>
                                 </table>
                             </div>

@@ -33,7 +33,7 @@
                     </div>
                     <!-- /.box-header -->
                     <!-- form start -->
-                    <form action="{{route('subject-register-action')}}" method="post" class="form-horizontal">
+                    <form action="{{route('class-room-register-action')}}" method="post" class="form-horizontal">
                         <div class="box-body">
                             <input type="hidden" name="_token" value="{{csrf_token()}}">
                             <div class="row">
@@ -50,7 +50,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label"><b style="color: red;">* </b>Standard : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('standard_id')) ? 'has-error' : '' }}">
-                                            <select class="form-control" name="standard_id" id="standard_id" tabindex="5">
+                                            <select class="form-control" name="standard_id" id="standard_id" tabindex="2">
                                                 <option value="" {{ empty(old('standard_id')) ? 'selected' : '' }}>Select standard</option>
                                                 @if(!empty($standards))
                                                     @foreach($standards as $standard)
@@ -66,7 +66,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label"><b style="color: red;">* </b>Division : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('division_id')) ? 'has-error' : '' }}">
-                                            <select class="form-control" name="division_id" id="division_id" tabindex="5">
+                                            <select class="form-control" name="division_id" id="division_id" tabindex="3">
                                                 <option value="" {{ empty(old('division_id')) ? 'selected' : '' }}>Select division</option>
                                                 @if(!empty($divisions))
                                                     @foreach($divisions as $division)
@@ -82,21 +82,12 @@
                                     <div class="form-group">
                                         <label for="name" class="col-sm-2 control-label"><b style="color: red;">* </b> Strength : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('strength')) ? 'has-error' : '' }}">
-                                            <input type="text" name="strength" class="form-control" id="strength" placeholder="Strength" value="{{ old('strength') }}" tabindex="1">
+                                            <input type="text" name="strength" class="form-control" id="strength" placeholder="Strength" value="{{ old('strength') }}" tabindex="4">
                                             @if(!empty($errors->first('strength')))
                                                 <p style="color: red;" >{{$errors->first('strength')}}</p>
                                             @endif
                                         </div>
                                     </div>
-                                    {{-- <div class="form-group">
-                                        <label for="name" class="col-sm-2 control-label"><b style="color: red;">* </b> No of Subjects : </label>
-                                        <div class="col-sm-10 {{ !empty($errors->first('no_of_subjects')) ? 'has-error' : '' }}">
-                                            <input type="text" name="no_of_subjects" class="form-control" id="no_of_subjects" placeholder="Number of subjects" value="{{ old('no_of_subjects') }}" tabindex="1">
-                                            @if(!empty($errors->first('no_of_subjects')))
-                                                <p style="color: red;" >{{$errors->first('no_of_subjects')}}</p>
-                                            @endif
-                                        </div>
-                                    </div> --}}
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label"><b style="color: red;">* </b>Incharge : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('teacher_incharge_id')) ? 'has-error' : '' }}">
@@ -116,19 +107,19 @@
                                     <br>
                                     <div class="box-header with-border">
                                         <h3 class="box-title" style="float: left;">Subject - Teacher Assignment</h3>
-                                        <p id="real_account_flag_message" style="color:blue;">&nbsp&nbsp&nbsp Select subject and teacher associated with class.</p>
+                                        <p id="real_account_flag_message" style="color:blue;">&nbsp&nbsp&nbsp Select subject and teacher combination for the class.</p>
                                     </div>
                                     <br>
                                     <div class="form-group">
-                                        <label for="description" class="col-sm-2 control-label">Subject - Teacher : </label>
+                                        <label for="description" class="col-sm-2 control-label">Options : </label>
                                         <div class="col-sm-10">
                                             @if(!empty($subjects))
                                                 <table class="table table-bordered table-hover">
                                                     <thead>
                                                         <tr>
-                                                            <th style="width: 2%;">#</th>
-                                                            <th style="width: 20%;">Subject</th>
-                                                            <th style="width: 15%;">Teacher</th>
+                                                            <th style="width: 4%;">#</th>
+                                                            <th style="width: 48%;">Subject</th>
+                                                            <th style="width: 48%;">Teacher</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -139,10 +130,11 @@
                                                                 </td>
                                                                 <td>
                                                                     <label for="subject_{{ $index }}" class="form-control">{{ $subject->subject_name }}</label>
+                                                                    <input type="hidden" name="subjects[]" value="{{ $subject->id }}">
                                                                 </td>
                                                                 <td>
                                                                     <div class="col-lg-12">
-                                                                        <select class="form-control" name="teacher_id[]" id="teacher_id" tabindex="5">
+                                                                        <select class="form-control" name="teacher_id[{{ $subject->id }}][1]" id="teacher_id" tabindex="5">
                                                                             <option value="" {{ empty(old('teacher_id')) ? 'selected' : '' }}>Select teacher</option>
                                                                             @if(!empty($teachers))
                                                                                 @foreach($teachers as $teacher)

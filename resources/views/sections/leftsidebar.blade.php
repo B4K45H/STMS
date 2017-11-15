@@ -46,7 +46,7 @@
             @if($currentUser->role == 0 || $currentUser->role == 1)
                 <li class="treeview {{ Request::is('timetable/*')? 'active' : '' }}">
                     <a href="#">
-                        <i class="fa fa-arrow-up"></i>
+                        <i class="fa fa-calendar"></i>
                         <span>Timetable</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
@@ -64,15 +64,20 @@
                             </a>
                         </li>
                         <li class="{{ Request::is('timetable/settings')? 'active' : '' }}">
-                            <a href="#">
+                            <a href="{{ route('timetable-settings') }}">
                                 <i class="fa fa-circle-o"></i> Settings
+                            </a>
+                        </li>
+                        <li class="{{ Request::is('timetable/substitution')? 'active' : '' }}">
+                            <a href="{{ route('timetable-substitution') }}">
+                                <i class="fa fa-circle-o"></i> Substitution
                             </a>
                         </li>
                     </ul>
                 </li>
                 <li class="treeview {{ Request::is('subject/*')? 'active' : '' }}">
                     <a href="#">
-                        <i class="fa fa-arrow-up"></i>
+                        <i class="fa fa-book"></i>
                         <span>Subject</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
@@ -93,7 +98,7 @@
                 </li>
                 <li class="treeview {{ Request::is('teacher/*')? 'active' : '' }}">
                     <a href="#">
-                        <i class="fa fa-arrow-up"></i>
+                        <i class="fa fa-user"></i>
                         <span>Teacher</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
@@ -112,21 +117,21 @@
                         </li>
                     </ul>
                 </li>
-                <li class="treeview {{ Request::is('class/*')? 'active' : '' }}">
+                <li class="treeview {{ Request::is('classroom/*')? 'active' : '' }}">
                     <a href="#">
-                        <i class="fa fa-arrow-up"></i>
+                        <i class="fa fa-group"></i>
                         <span>Class</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li class="{{ Request::is('class/register')? 'active' : '' }}">
+                        <li class="{{ Request::is('classroom/register')? 'active' : '' }}">
                             <a href="{{ route('class-room-register') }}">
                                 <i class="fa fa-circle-o"></i> Registration
                             </a>
                         </li>
-                        <li class="{{ Request::is('class/list')? 'active' : '' }}">
+                        <li class="{{ Request::is('classroom/list')? 'active' : '' }}">
                             <a href="{{ route('class-room-list') }}">
                                 <i class="fa fa-circle-o"></i> List
                             </a>

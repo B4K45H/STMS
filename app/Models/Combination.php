@@ -9,9 +9,9 @@ class Combination extends Model
     /**
      * Get the classroom that owns the combination.
      */
-    public function classroom()
+    public function classRoom()
     {
-        return $this->belongsTo('App\Model\ClassRoom');
+        return $this->belongsTo('App\Models\ClassRoom');
     }
 
     /**
@@ -19,7 +19,7 @@ class Combination extends Model
      */
     public function subject()
     {
-        return $this->belongsTo('App\Model\Subject');
+        return $this->belongsTo('App\Models\Subject');
     }
 
     /**
@@ -27,6 +27,6 @@ class Combination extends Model
      */
     public function teacher()
     {
-        return $this->belongsTo('App\Model\Teacher');
+        return $this->belongsTo('App\Models\Teacher');
     }
 }

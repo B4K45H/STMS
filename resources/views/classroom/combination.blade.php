@@ -1,15 +1,15 @@
 @extends('layouts.app')
-@section('title', 'Class Room List')
+@section('title', 'Subject - Teacher Combination')
 @section('content')
 <div class="content-wrapper">
      <section class="content-header">
         <h1>
-            Class Room
-            <small>List</small>
+            Subject - Teacher
+            <small>Combination</small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="{{ route('dashboard') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li class="active">Class Room List</li>
+            <li class="active">Combination List</li>
         </ol>
     </section>
     <!-- Main content -->
@@ -27,7 +27,7 @@
             <div class="col-md-12">
                 <div class="box">
                     <div class="box-header">
-                        <h3 class="box-title">Class Rooms</h3>
+                        <h3 class="box-title">Subject - Teacher combination of class : {{ $className }}</h3>
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body">
@@ -37,40 +37,26 @@
                                     <thead>
                                         <tr>
                                             <th style="width: 2%;">#</th>
-                                            <th style="width: 20%;">Room No</th>
-                                            <th style="width: 10%;">Class</th>
-                                            <th style="width: 25%;">Incharge</th>
-                                            <th style="width: 25%;">Strength</th>
-                                            <th style="width: 18%;">Details</th>
+                                            <th style="width: 28%;">Class</th>
+                                            {{-- <th style="width: 18%;">Division</th> --}}
+                                            <th style="width: 35%;">Subject</th>
+                                            <th style="width: 35%;">Teacher</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if(!empty($classRooms))
-                                            @foreach($classRooms as $index => $classroom)
+                                        @if(!empty($combinations))
+                                            @foreach($combinations as $index => $combination)
                                                 <tr>
-                                                    <td>{{ $index + $classRooms->firstItem() }}</td>
-                                                    <td>{{ $classroom->room_id }}</td>
-                                                    <td>{{ $classroom->standard->standard_name }} - {{ $classroom->division->division_name }}</td>
-                                                    <td>{{ $classroom->incharge->name }}</td>
-                                                    <td>{{ $classroom->strength }}</td>
-                                                    <td><a href="{{ route('class-room-combination-list', ['id'=> $classroom->id]) }}">View More</a></td>
+                                                    <td>{{ $index + 1 }}</td>
+                                                    <td>{{ $className }}</td>
+                                                    {{-- <td>{{ $combination->classRoom->division->division_name }}</td> --}}
+                                                    <td>{{ $combination->subject->subject_name }}</td>
+                                                    <td>{{ $combination->teacher->name }}</td>
                                                 </tr>
                                             @endforeach
                                         @endif
                                     </tbody>
                                 </table>
-                            </div>
-                        </div>
-                        <div class="row  no-print">
-                            <div class="col-md-12">
-                                <div class="col-md-6"></div>
-                                <div class="col-md-6">
-                                    <div class="pull-right">
-                                        @if(!empty($classRooms))
-                                            {{ $classRooms->links() }}
-                                        @endif
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>

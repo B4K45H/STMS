@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ClassRoom extends Model
 {
+    public $timestamps = false;
+
     /**
      * Get the combinations for the classroom
      */
@@ -28,5 +30,13 @@ class ClassRoom extends Model
     public function division()
     {
         return $this->belongsTo('App\Models\Division');
+    }
+
+    /**
+     * Get the class incharge for the classroom.
+     */
+    public function incharge()
+    {
+        return $this->belongsTo('App\Models\Teacher');
     }
 }

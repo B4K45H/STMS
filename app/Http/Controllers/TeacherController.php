@@ -18,30 +18,26 @@ class TeacherController extends Controller
      /**
      * Handle new product registration
      */
-    public function registerAction()
+    public function registerAction(Request $request)
     {
-        /*$categoryId     = $request->get('category_id');
-        $name           = $request->get('name');
-        $productCode    = $request->get('product_code');
-        $description    = $request->get('description');
-        $measureUnit    = $request->get('measure_unit');
-        $sgst           = $request->get('sgst');
-        $cgst           = $request->get('cgst');
+        $name               = $request->get('teacher_name');
+        $categoryId         = $request->get('category_id');
+        $description        = $request->get('description');
+        $noOfSessionPerWeek = $request->get('no_of_session_per_week');
+        $experienceLevel    = $request->get('experience_level');
 
-        $product = new Product;
-        $product->category_id   = $categoryId;
-        $product->name          = $name;
-        $product->gst_code      = $productCode;
-        $product->description   = $description;
-        $product->unit          = $measureUnit;
-        $product->sgst          = $sgst;
-        $product->cgst          = $cgst;
-        $product->status        = 1;
-        if($product->save()) {
+        $teacher = new Teacher;
+        $teacher->name                      = $name;
+        $teacher->category_id               = $categoryId;
+        $teacher->description               = $description;
+        $teacher->no_of_session_per_week    = $noOfSessionPerWeek;
+        $teacher->experience_level          = $experienceLevel;
+        $teacher->status        = 1;
+        if($teacher->save()) {
             return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
         } else {
-            return redirect()->back()->withInput()->with("message","Failed to save the product details. Try again after reloading the page!<small class='pull-right'> #05/02</small>")->with("alert-class","alert-danger");
-        }*/
+            return redirect()->back()->withInput()->with("message","Failed to save the teacher details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+        }
     }
 
     /**

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Teacher extends Model
 {
+    public $timestamps = false;
+    
     /**
      * Get the combinations for the teacher
      */

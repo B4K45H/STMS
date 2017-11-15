@@ -39,26 +39,26 @@
                             <div class="row">
                                 <div class="col-md-11">
                                     <div class="form-group">
-                                        <label for="name" class="col-sm-2 control-label"><b style="color: red;">* </b> Subject Name : </label>
-                                        <div class="col-sm-10 {{ !empty($errors->first('name')) ? 'has-error' : '' }}">
-                                            <input type="text" name="name" class="form-control" id="name" placeholder="Subject name" value="{{ old('name') }}" tabindex="1">
-                                            @if(!empty($errors->first('name')))
-                                                <p style="color: red;" >{{$errors->first('name')}}</p>
+                                        <label for="subject_name" class="col-sm-2 control-label"><b style="color: red;">* </b> Subject Name : </label>
+                                        <div class="col-sm-10 {{ !empty($errors->first('subject_name')) ? 'has-error' : '' }}">
+                                            <input type="text" name="subject_name" class="form-control" id="subject_name" placeholder="Subject name" value="{{ old('subject_name') }}" tabindex="1">
+                                            @if(!empty($errors->first('subject_name')))
+                                                <p style="color: red;" >{{$errors->first('subject_name')}}</p>
                                             @endif
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label"><b style="color: red;">* </b>Subject Category : </label>
-                                        <div class="col-sm-10 {{ !empty($errors->first('category_id')) ? 'has-error' : '' }}">
-                                            <select class="form-control" name="category_id" id="category_id" tabindex="5">
-                                                <option value="" {{ empty(old('category_id')) ? 'selected' : '' }}>Select subject category</option>
-                                                <option value="1" {{ old('category_id')==1 ? 'selected' : '' }}>Language</option>
-                                                <option value="2" {{ old('category_id')==2 ? 'selected' : '' }}>Science</option>
-                                                <option value="3" {{ old('category_id')==3 ? 'selected' : '' }}>Extra Curricular</option>
-                                                <option value="4" {{ old('category_id')==4 ? 'selected' : '' }}>Moral</option>
+                                        <label for="subject_category_id" class="col-sm-2 control-label"><b style="color: red;">* </b>Subject Category : </label>
+                                        <div class="col-sm-10 {{ !empty($errors->first('subject_category_id')) ? 'has-error' : '' }}">
+                                            <select class="form-control" name="subject_category_id" id="subject_category_id" tabindex="2">
+                                                <option value="" {{ empty(old('subject_category_id')) ? 'selected' : '' }}>Select subject category</option>
+                                                <option value="1" {{ old('subject_category_id')==1 ? 'selected' : '' }}>Language</option>
+                                                <option value="2" {{ old('subject_category_id')==2 ? 'selected' : '' }}>Science</option>
+                                                <option value="3" {{ old('subject_category_id')==3 ? 'selected' : '' }}>Extra Curricular</option>
+                                                <option value="4" {{ old('subject_category_id')==4 ? 'selected' : '' }}>Moral</option>
                                             </select>
-                                            @if(!empty($errors->first('category_id')))
-                                                <p style="color: red;" >{{$errors->first('category_id')}}</p>
+                                            @if(!empty($errors->first('subject_category_id')))
+                                                <p style="color: red;" >{{$errors->first('subject_category_id')}}</p>
                                             @endif
                                         </div>
                                     </div>
@@ -66,9 +66,9 @@
                                         <label for="description" class="col-sm-2 control-label">Description : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('description')) ? 'has-error' : '' }}">
                                             @if(!empty(old('description')))
-                                                <textarea class="form-control" name="description" id="description" rows="3" placeholder="Description" style="resize: none;" tabindex="2">{{ old('description') }}</textarea>
+                                                <textarea class="form-control" name="description" id="description" rows="3" placeholder="Description" style="resize: none;" tabindex="3">{{ old('description') }}</textarea>
                                             @else
-                                                <textarea class="form-control" name="description" id="description" rows="3" placeholder="Description" style="resize: none;" tabindex="2"></textarea>
+                                                <textarea class="form-control" name="description" id="description" rows="3" placeholder="Description" style="resize: none;" tabindex="3"></textarea>
                                             @endif
                                             @if(!empty($errors->first('description')))
                                                 <p style="color: red;" >{{$errors->first('description')}}</p>
@@ -77,20 +77,20 @@
                                     </div>
                                     <br>
                                     <div class="box-header with-border">
-                                        <h3 class="box-title" style="float: left;">Subject Assignment To Standard</h3>
-                                        <p id="real_account_flag_message" style="color:blue;">&nbsp&nbsp&nbsp Select standard associated with subject.</p>
+                                        <h3 class="box-title" style="float: left;">Subject - Standard Assignment</h3>
+                                        <p id="real_account_flag_message" style="color:blue;">&nbsp&nbsp&nbsp Select standards associated with subject.</p>
                                     </div>
                                     <br>
                                     <div class="form-group">
-                                        <label for="description" class="col-sm-2 control-label">Classes : </label>
+                                        <label for="description" class="col-sm-2 control-label">Options : </label>
                                         <div class="col-sm-10">
                                             @if(!empty($standards))
                                             <table class="table table-bordered table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th style="width: 2%;">#</th>
-                                                        <th style="width: 20%;">Standard</th>
-                                                        <th style="width: 15%;">Sessions Per Week</th>
+                                                        <th style="width: 4%;">#</th>
+                                                        <th style="width: 48%;">Standard</th>
+                                                        <th style="width: 48%;">Sessions Per Week</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -100,7 +100,7 @@
                                                                 <div class="col-lg-6">
                                                                     <div class="input-group">
                                                                         <span class="input-group-addon">
-                                                                            <input type="checkbox" name="standard[]" class="standard" id="standard_{{ $index }}" checked>
+                                                                            <input type="checkbox" name="standard[]" class="standard" id="standard_{{ $index }}" value="{{ $standard->id }}" checked>
                                                                         </span>
                                                                     </div>
                                                                 </div>
@@ -109,8 +109,8 @@
                                                                 <label for="standard_{{ $index }}" class="form-control">{{ $standard->standard_name }}</label>
                                                             </td>
                                                             <td>
-                                                                <div class="col-lg-6">
-                                                                    <input type="text" name="no_of_session_per_week[]" class="form-control">
+                                                                <div class="col-lg-12">
+                                                                    <input type="text" name="no_of_session_per_week[{{ $standard->id }}]" class="form-control">
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -126,10 +126,10 @@
                             <div class="row">
                                 <div class="col-xs-3"></div>
                                 <div class="col-xs-3">
-                                    <button type="reset" class="btn btn-default btn-block btn-flat" tabindex="6">Clear</button>
+                                    <button type="reset" class="btn btn-default btn-block btn-flat">Clear</button>
                                 </div>
                                 <div class="col-xs-3">
-                                    <button type="submit" class="btn btn-primary btn-block btn-flat submit-button" tabindex="5">Submit</button>
+                                    <button type="submit" class="btn btn-primary btn-block btn-flat submit-button">Submit</button>
                                 </div>
                                 <!-- /.col -->
                             </div><br>

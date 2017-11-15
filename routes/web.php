@@ -50,12 +50,17 @@ Route::group(['middleware' => 'auth.check'], function () {
         Route::get('/teacher/list', 'TeacherController@list')->name('teacher-list');
 
         //class
-        Route::get('/class/register', 'ClassRoomController@register')->name('class-room-register');
-        Route::post('/class/register/action', 'ClassRoomController@registerAction')->name('class-room-register-action');
-        Route::get('/class/list', 'ClassRoomController@list')->name('class-room-list');
+        Route::get('/classroom/register', 'ClassRoomController@register')->name('class-room-register');
+        Route::post('/classroom/register/action', 'ClassRoomController@registerAction')->name('class-room-register-action');
+        Route::get('/classroom/list', 'ClassRoomController@list')->name('class-room-list');
+        Route::get('/classroom/combinationList/{id}', 'ClassRoomController@combinationList')->name('class-room-combination-list');
 
         //timetable
         Route::get('/timetable/teacher', 'TimetableController@teacherLevel')->name('timetable-teacher');
         Route::get('/timetable/student', 'TimetableController@studentLevel')->name('timetable-student');
+        Route::get('/timetable/settings', 'TimetableController@settings')->name('timetable-settings');
+        Route::post('/timetable/settings/action', 'TimetableController@settingsAction')->name('timetable-settings-action');
+        Route::post('/timetable/generate/action', 'TimetableController@generateTimetableAction')->name('timetable-generation-action');
+        Route::get('/timetable/substitution', 'TimetableController@substitution')->name('timetable-substitution');
     });
 });

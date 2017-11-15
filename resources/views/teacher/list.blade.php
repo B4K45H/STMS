@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Subject List')
+@section('title', 'Teacher List')
 @section('content')
 <div class="content-wrapper">
      <section class="content-header">
@@ -41,7 +41,7 @@
                                             <th style="width: 10%;">Category</th>
                                             <th style="width: 35%;">Description</th>
                                             <th style="width: 10%;">No of session per week</th>
-                                            <th style="width: 23%;">Level</th>
+                                            <th style="width: 23%;">Experience Level</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -50,10 +50,26 @@
                                                 <tr>
                                                     <td>{{ $index + $teachers->firstItem() }}</td>
                                                     <td>{{ $teacher->name }}</td>
-                                                    <td>{{ $teacher->category }}</td>
-                                                    <td>{{ $teacher->description }}</td>
+                                                    @if($teacher->category_id == 1)
+                                                        <td>Language</td>
+                                                    @elseif($teacher->category_id == 2)
+                                                        <td>Science</td>
+                                                    @elseif($teacher->category_id == 3)
+                                                        <td>Extra Curricular</td>
+                                                    @else
+                                                        <td>Moral</td>
+                                                    @endif
+                                                    <td>{{ !empty($teacher->description) ? $teacher->description : "Nil" }}</td>
                                                     <td>{{ $teacher->no_of_session_per_week }}</td>
-                                                    <td>{{ $teacher->level }}</td>
+                                                    @if($teacher->experience_level == 1)
+                                                        <td>Level A</td>
+                                                    @elseif($teacher->experience_level == 2)
+                                                        <td>Level B</td>
+                                                    @elseif($teacher->experience_level == 3)
+                                                        <td>Level C</td>
+                                                    @else
+                                                        <td>Level D</td>
+                                                    @endif
                                                 </tr>
                                             @endforeach
                                         @endif
@@ -66,8 +82,8 @@
                                 <div class="col-md-6"></div>
                                 <div class="col-md-6">
                                     <div class="pull-right">
-                                        @if(!empty($subjects))
-                                            {{ $subjects->links() }}
+                                        @if(!empty($teachers))
+                                            {{ $teachers->links() }}
                                         @endif
                                     </div>
                                 </div>

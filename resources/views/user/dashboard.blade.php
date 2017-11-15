@@ -34,19 +34,19 @@
         </div>
     @endif
       <!-- Small boxes (Stat box) -->
-      {{-- <div class="row">
+      <div class="row">
         <div class="col-lg-3 col-xs-6">
           <!-- small box -->
           <div class="small-box bg-aqua">
             <div class="inner">
-              <h3>{{ !empty($salesCount) ? $salesCount : 0 }}</h3>
+              <h3>Teacher's</h3>
 
-              <p>Registered Sales</p>
+              <p>Timetable</p>
             </div>
             <div class="icon">
-              <i class="ion ion-bag"></i>
+              <i class="ion ion-calendar"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="{{ route('timetable-teacher') }}" class="small-box-footer">View Timetable <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
@@ -54,14 +54,14 @@
           <!-- small box -->
           <div class="small-box bg-info">
             <div class="inner">
-              <h3>{{ !empty($productsCount) ? $productsCount : 0 }}</h3>
+              <h3>Student's</h3>
 
-              <p>Registered Products</p>
+              <p>Timetable</p>
             </div>
             <div class="icon">
-              <i class="ion ion-stats-bars"></i>
+              <i class="ion ion-calendar"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="{{ route('timetable-teacher') }}" class="small-box-footer">View Timetable <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
@@ -69,14 +69,14 @@
           <!-- small box -->
           <div class="small-box bg-yellow">
             <div class="inner">
-              <h3>{{ !empty($accountsCount) ? $accountsCount : 0 }}</h3>
+              <h3>{{ !empty($teacherCount) ? $teacherCount : 0 }}</h3>
 
-              <p>Registered Accounts</p>
+              <p>Registered Teachers</p>
             </div>
             <div class="icon">
               <i class="ion ion-person-add"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="{{ route('teacher-register') }}" class="small-box-footer">Add Teacher <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
@@ -84,18 +84,18 @@
           <!-- small box -->
           <div class="small-box bg-red">
             <div class="inner">
-              <h3>{{ !empty($pendingWeighmentsCount) ? $pendingWeighmentsCount : 0 }}</h3>
+              <h3>{{ !empty($classCount) ? $classCount : 0 }}</h3>
 
-              <p>***</p>
+              <p>Classes</p>
             </div>
             <div class="icon">
               <i class="ion ion-pie-graph"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="{{ route('class-room-register') }}" class="small-box-footer">Add Class <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
-      </div> --}}
+      </div>
       <!-- /.row -->
       <!-- Main row -->
       <div class="row">

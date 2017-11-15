@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Subject extends Model
 {
+    public $timestamps = false;
+    
     /**
      * The standards that belong to the subject.
      */
