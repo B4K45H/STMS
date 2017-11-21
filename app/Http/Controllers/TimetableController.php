@@ -137,20 +137,24 @@ class TimetableController extends Controller
      */
     public function generateTimetableAction()
     {
-        $combs              = [];
-        $sessionTeacher     = [];
-        $sessionClassRoom   = [];
-        $noOfSessionPerWeek = [];
-        $classRoomSubject   = [];
-        $timetableArray     = [];
-        $combinationFlag    = [];
-        $combinationCount   = [];
-        $settings           = Settings::where('status', 1)->first();
-        $teachers           = Teacher::where('status', 1)->get();
-        $sessions           = Session::where('status', 1)->get();
-        $classRooms         = ClassRoom::where('status', 1)->get();//->where('id', 1)
-        $combinations       = Combination::where('status', 1)->get();//->where('class_room_id', 1)
-        $standards          = Standard::where('status', 1)->get();
+        $loopFlag               = true;
+        $loopCount              = 0;
+        $prevcombination        = 0;
+        $beforprevcombination   = 0;
+        $sessionTeacher         = [];
+        $sessionClassRoom       = [];
+        $noOfSessionPerWeek     = [];
+        $classRoomSubjectCount  = [];
+        $timetableArray         = [];
+        //$combinationFlag      = [];
+        //$combinationCount     = [];
+        $classCombinationsArr   = [];
+        $settings               = Settings::where('status', 1)->first();
+        $teachers               = Teacher::where('status', 1)->get();
+        $sessions               = Session::where('status', 1)->get();
+        $classRooms             = ClassRoom::where('status', 1)->get();//->where('id', 1)
+        $combinations           = Combination::where('status', 1)->get();//->where('class_room_id', 1)
+        $standards              = Standard::where('status', 1)->get();
 
         $noOfSessionPerDay  = $settings->session_per_day;
         //$noOfDays           = $settings->working_days_in_week;
@@ -165,53 +169,87 @@ class TimetableController extends Controller
             }
         }
 
-        foreach ($classRooms as $classRoom) {
+        /*foreach ($classRooms as $classRoom) {
             $combinationCount[$classRoom->id] = count($classRoom->combinations);
+        }*/
+        
+        //$classCombinationsArr[$classRoom->id] = [];
+        foreach ($combinations as $comb) {
+            if(empty($classCombinationsArr[$comb->class_room_id])) {
+                $classCombinationsArr[$comb->class_room_id] = [];
+            }
+            //if($comb->class_room_id == $classRoom->id) {
+            array_push($classCombinationsArr[$comb->class_room_id], $comb->id);
+            //}
         }
 
         foreach ($classRooms as $classRoom) {
             foreach ($sessions as $session) {
-                foreach ($combinations as $combination) {
-                    if($combination->class_room_id == $classRoom->id) {
-                        $classRoomId    = $combination->class_room_id;
-                        $teacherId      = $combination->teacher_id;
-                        $subjectId      = $combination->subject_id;
+                print_r("..." .$classRoom->id. "... <br>");
+                do {
+                    $loopFlag   = true;
+                    $loopCount  = $loopCount + 1;
+                    //selecting a random combination of the current class
+                    $combination = $combinations[array_rand($classCombinationsArr[$classRoom->id])];
+                    if($combination->id == $prevcombination && $combination->id == $beforprevcombination) {
+                        continue;
+                    }
+//dd($classCombinationsArr[$classRoom->id]);
+                    $classRoomId    = $combination->class_room_id;
+                    $teacherId      = $combination->teacher_id;
+                    $subjectId      = $combination->subject_id;
 
-                        if(empty($classRoomSubject[$classRoomId][$subjectId])) {
-                            $classRoomSubject[$classRoomId][$subjectId] = 0;
-                        }
-                        if(empty($combinationFlag[$classRoom->id])) {
-                            $combinationFlag[$classRoom->id] = [];
-                        }
-                        
-                        if(empty($sessionTeacher[$session->id][$teacherId]) && empty($sessionClassRoom[$session->id][$classRoomId])) {
-                            if($noOfSessionPerWeek[$classRoom->standard->id][$subjectId] >= $classRoomSubject[$classRoomId][$subjectId]) {
-                                if(!in_array($combination->id, $combinationFlag[$classRoom->id])) {
-                                    array_push($combinationFlag[$classRoom->id], $combination->id);
-                                    //print_r($combinationCount[$classRoom->id]. " - ".count($combinationFlag[$classRoom->id])."<br>");
-                                    if($combinationCount[$classRoom->id] == count($combinationFlag[$classRoom->id])) {
-                                        //print_r("in");
-                                        $combinationFlag[$classRoom->id] = [];
-                                    }
-                                    $sessionTeacher[$session->id][$teacherId] = $classRoomId;
-                                    $sessionClassRoom[$session->id][$classRoomId] = $teacherId;
-                                    $classRoomSubject[$classRoomId][$subjectId] = $classRoomSubject[$classRoomId][$subjectId] + 1;
+//print_r($combination->id. "<br>");
 
-                                    $timetableArray[] = [
-                                        'session_id'        => $session->id,
-                                        'combination_id'    => $combination->id,
-                                        'status'            => 1
-                                    ];
-                                }
-                            } else {
-                                $combinationCount[$classRoom->id] = $combinationCount[$classRoom->id] -1;
+                    if(empty($classRoomSubjectCount[$classRoomId][$subjectId])) {
+                        $classRoomSubjectCount[$classRoomId][$subjectId] = 0;
+                    }
+                    /*if(empty($combinationFlag[$classRoom->id])) {
+                        $combinationFlag[$classRoom->id] = [];
+                    }*/
+                    
+                    if(empty($sessionTeacher[$session->id][$teacherId]) && empty($sessionClassRoom[$session->id][$classRoomId])) {
+                        if($noOfSessionPerWeek[$classRoom->standard->id][$subjectId] >= $classRoomSubjectCount[$classRoomId][$subjectId]) {
+                            //if(!in_array($combination->id, $combinationFlag[$classRoom->id])) {
+                                //array_push($combinationFlag[$classRoom->id], $combination->id);
+                                //if($combinationCount[$classRoom->id] == count($combinationFlag[$classRoom->id])) {
+                                    //$combinationFlag[$classRoom->id] = [];
+                                //}
+                                $sessionTeacher[$session->id][$teacherId] = $classRoomId;
+                                $sessionClassRoom[$session->id][$classRoomId] = $teacherId;
+                                $classRoomSubjectCount[$classRoomId][$subjectId] = $classRoomSubjectCount[$classRoomId][$subjectId] + 1;
+
+                                $timetableArray[] = [
+                                    'session_id'        => $session->id,
+                                    'combination_id'    => $combination->id,
+                                    'status'            => 1
+                                ];
+                                //loop termination
+                                $loopFlag   = false;
+                                $loopCount  = 0;
+                                $beforprevcombination   = $prevcombination;
+                                $prevcombination        = $combination->id;
+                            //}
+                        } else {
+                            if (($key = array_search($combination->id, $classCombinationsArr[$classRoom->id])) !== false) {
+                                unset($classCombinationsArr[$classRoom->id][$key]);
                             }
+                            //$combinationCount[$classRoom->id] = $combinationCount[$classRoom->id] -1;
                         }
                     }
+                } while($loopFlag && $loopCount <= 100);
+                print_r($session->id. " + ". $classRoom->id. " = ". $sessionClassRoom[$session->id][$classRoom->id]. "<br>");
+
+                if(empty($sessionClassRoom[$session->id][$classRoom->id])) {
+                    //print_r($session->id. " + ". $classRoom->id. " = ". $sessionClassRoom[$session->id][$classRoom->id]. "<br>");
+                    return redirect()->back()->withInput()->with("message","Failed to generate the timetable. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+                } else {
+                    //print_r($session->id. " + ". $classRoom->id. " = ". $sessionClassRoom[$session->id][$classRoom->id]. "<br>");
                 }
             }
         }
-
+        dd(1);
+//dd($timetableArray);
         //delete all existing records
         Timetable::truncate();
 
