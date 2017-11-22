@@ -122,7 +122,7 @@
                                                             <th style="width: 48%;">Teacher</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody>
+                                                    <tbody class="subject_teacher_assignment_div">
                                                         @foreach($subjects as $index=>$subject)
                                                             <tr>
                                                                 <td>
@@ -134,7 +134,7 @@
                                                                 </td>
                                                                 <td>
                                                                     <div class="col-lg-12">
-                                                                        <select class="form-control" name="teacher_id[{{ $subject->id }}][1]" id="teacher_id" tabindex="5">
+                                                                        <select class="form-control" name="teacher_id[{{ $subject->id }}]" id="teacher_id" tabindex="5">
                                                                             <option value="" {{ empty(old('teacher_id')) ? 'selected' : '' }}>Select teacher</option>
                                                                             @if(!empty($teachers))
                                                                                 @foreach($teachers as $teacher)
@@ -174,4 +174,7 @@
     </section>
     <!-- /.content -->
 </div>
+@endsection
+@section('scripts')
+    <script src="/js/registrations/class-room-registration.js?rndstr={{ rand(1000,9999) }}"></script>
 @endsection

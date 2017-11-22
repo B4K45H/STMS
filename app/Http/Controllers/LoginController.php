@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
+use App\Models\ClassRoom;
+use App\Models\Teacher;
 
 class LoginController extends Controller
 {
@@ -66,16 +68,15 @@ class LoginController extends Controller
      */
     public function dashboard()
     {
-        $pendingWeighmentsCount = 0;
-        $accountsCount = 0;
-        $salesCount = 0;
-        $productsCount = 0;
+        $classesCount   = 0;
+        $teachersCount  = 0;
+
+        $classesCount   = ClassRoom::where('status', 1)->count();
+        $teachersCount  = Teacher::where('status', 1)->count();
 
         return view('user.dashboard', [
-                'pendingWeighmentsCount'    => $pendingWeighmentsCount,
-                'accountsCount'             => $accountsCount,
-                'salesCount'                => $salesCount,
-                'productsCount'             => $productsCount
+                'classesCount'  => $classesCount,
+                'teachersCount' => $teachersCount
             ]);
     }
 

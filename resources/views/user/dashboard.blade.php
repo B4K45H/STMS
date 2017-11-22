@@ -69,7 +69,7 @@
           <!-- small box -->
           <div class="small-box bg-yellow">
             <div class="inner">
-              <h3>{{ !empty($teacherCount) ? $teacherCount : 0 }}</h3>
+              <h3>{{ !empty($teachersCount) ? $teachersCount : 0 }}</h3>
 
               <p>Registered Teachers</p>
             </div>
@@ -84,7 +84,7 @@
           <!-- small box -->
           <div class="small-box bg-red">
             <div class="inner">
-              <h3>{{ !empty($classCount) ? $classCount : 0 }}</h3>
+              <h3>{{ !empty($classesCount) ? $classesCount : 0 }}</h3>
 
               <p>Classes</p>
             </div>

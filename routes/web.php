@@ -54,6 +54,7 @@ Route::group(['middleware' => 'auth.check'], function () {
         Route::post('/classroom/register/action', 'ClassRoomController@registerAction')->name('class-room-register-action');
         Route::get('/classroom/list', 'ClassRoomController@list')->name('class-room-list');
         Route::get('/classroom/combinationList/{id}', 'ClassRoomController@combinationList')->name('class-room-combination-list');
+        Route::get('/get/subjects/standard/{id}', 'ClassRoomController@getSubjectsByStandard')->name('get-subjects-by-standard');
 
         //timetable
         Route::get('/timetable/teacher', 'TimetableController@teacherLevel')->name('timetable-teacher');

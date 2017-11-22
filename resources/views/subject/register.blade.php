@@ -145,3 +145,6 @@
     <!-- /.content -->
 </div>
 @endsection
+@section('scripts')
+    <script src="/js/registrations/subject-registration.js?rndstr={{ rand(1000,9999) }}"></script>
+@endsection

@@ -9,6 +9,7 @@ use App\Models\ClassRoom;
 use App\Models\Teacher;
 use App\Models\Subject;
 use App\Models\Combination;
+use App\Http\Requests\ClassRoomRegistrationRequest;
 
 class ClassRoomController extends Controller
 {
@@ -33,7 +34,7 @@ class ClassRoomController extends Controller
      /**
      * Handle new class room registration
      */
-    public function registerAction(Request $request)
+    public function registerAction(ClassRoomRegistrationRequest $request)
     {
         $combinationArr = [];
         $roomNumber         = $request->get('room_number');
@@ -43,7 +44,7 @@ class ClassRoomController extends Controller
         $teacherInchargeId  = $request->get('teacher_incharge_id');
         $subjects           = $request->get('subjects');
         $teacherId          = $request->get('teacher_id');
-//dd($teacherId);
+
         $classRoom = new ClassRoom;
         $classRoom->standard_id = $standardId;
         $classRoom->division_id = $divisionId;
@@ -56,17 +57,17 @@ class ClassRoomController extends Controller
                 $combinationArr[] = [
                     'class_room_id' => $classRoom->id,
                     'subject_id'    => $subject,
-                    'teacher_id'    => $teacherId[$subject][1],
+                    'teacher_id'    => $teacherId[$subject],
                     'status'        => 1
                 ];
-                if(!empty($teacherId[$subject][2])) {
+                /*if(!empty($teacherId[$subject][2])) {
                     $combinationArr[] = [
                         'class_room_id' => $classRoom->id,
                         'subject_id'    => $subject,
                         'teacher_id'    => $teacherId[$subject][2],
                         'status'        => 1
                     ];
-                }
+                }*/
             }
             if(Combination::insert($combinationArr)) {
                 return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
@@ -114,5 +115,26 @@ class ClassRoomController extends Controller
             'combinations' => $combinations,
             'className'    =>  $className
         ]);
+    }
+
+    /**
+     * Return view for combination details listing
+     */
+    public function getSubjectsByStandard(Request $request, $standardId)
+    {
+        if($request->ajax()) {
+            $standard   = Standard::find($standardId);
+            $teachers   = Teacher::where('status', 1)->get();
+            if(!empty($standard) && !empty($standard->id)) {
+                return([
+                    'flag'      => true,
+                    'subjects'  => $standard->subjects->toJson(),
+                    'teachers'  => $teachers->toJson(),
+                    ]);
+            }
+        }
+        return([
+            'flag'  => false,
+            ]);
     }
 }
