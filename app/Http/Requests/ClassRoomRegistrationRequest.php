@@ -28,13 +28,22 @@ class ClassRoomRegistrationRequest extends FormRequest
     public function messages()
     {
         return [
-            'room_number.required'          => "The room number is required.",
+            'room_id.required'              => "The room number field is required",
+            'room_id.max'                   => "The room number field may not be greater than 20 characters.",
+            'room_id.unique'                => "The room number value has already been taken.",
             'standard_id.required'          => "The standard field is required.",
+            'standard_id.integer'           => "The selected standard is invalid.",
+            'standard_id.in'                => "The selected standard is invalid.",
             'division_id.required'          => "The division field is required.",
-            'strength.required'             => "The strength field is required.",
+            'division_id.integer'           => "The selected division is invalid.",
+            'division_id.in'                => "The selected division is invalid.",
             'teacher_incharge_id.required'  => "The class incharge field is required.",
-            'subjects.*.required'           => "Something went wrong. Please try again after reloading the page.",
-            'teacher_id.*.required'         => "Combinations required.",
+            'teacher_incharge_id.integer'   => "The selected class incharge value is invalid.",
+            'teacher_incharge_id.in'        => "The selected class incharge value is invalid.",
+            'teacher_id.required'           => "The subject - teacher combinations are required.",
+            'teacher_id.*.required'         => "The subject - teacher combination is required.",
+            'teacher_id.*.integer'          => "The subject - teacher combination is invalid.",
+            'teacher_id.*.in'               => "The subject - teacher combination is invalid.",
         ];
     }
 
@@ -46,7 +55,7 @@ class ClassRoomRegistrationRequest extends FormRequest
     public function rules()
     {
         return [
-            'room_number'           => 'required|max:20|unique:class_rooms',
+            'room_id'               => 'required|max:20|unique:class_rooms',
             'standard_id'           => [
                                             'required',
                                             'integer',
@@ -57,16 +66,14 @@ class ClassRoomRegistrationRequest extends FormRequest
                                             'integer',
                                             Rule::in(Division::pluck('id')->toArray()),
                                         ],
-            'strength'              => 'required|numeric|max:99',
+            'strength'              => 'required|integer|max:99|min:09',
             'teacher_incharge_id'   => [
                                             'required',
                                             'integer',
                                             Rule::in(Teacher::pluck('id')->toArray()),
                                         ],
-            'subjects.*'            => [
-                                            'required',
-                                            'integer',
-                                            Rule::in(Subject::pluck('id')->toArray()),
+            'teacher_id'            => [
+                                            'required'
                                         ],
             'teacher_id.*'          => [
                                             'required',

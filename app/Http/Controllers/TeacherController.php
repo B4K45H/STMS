@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Teacher;
+use App\Http\Requests\TeacherRegistrationRequest;
 
 class TeacherController extends Controller
 {
@@ -18,20 +19,20 @@ class TeacherController extends Controller
      /**
      * Handle new product registration
      */
-    public function registerAction(Request $request)
+    public function registerAction(TeacherRegistrationRequest $request)
     {
         $name               = $request->get('teacher_name');
         $categoryId         = $request->get('category_id');
         $description        = $request->get('description');
         $noOfSessionPerWeek = $request->get('no_of_session_per_week');
-        $experienceLevel    = $request->get('experience_level');
+        $teacherLevel       = $request->get('experience_level');
 
         $teacher = new Teacher;
-        $teacher->name                      = $name;
+        $teacher->teacher_name              = $name;
         $teacher->category_id               = $categoryId;
         $teacher->description               = $description;
         $teacher->no_of_session_per_week    = $noOfSessionPerWeek;
-        $teacher->experience_level          = $experienceLevel;
+        $teacher->teacher_level             = $teacherLevel;
         $teacher->status        = 1;
         if($teacher->save()) {
             return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");

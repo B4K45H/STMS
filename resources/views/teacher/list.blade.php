@@ -49,7 +49,7 @@
                                             @foreach($teachers as $index => $teacher)
                                                 <tr>
                                                     <td>{{ $index + $teachers->firstItem() }}</td>
-                                                    <td>{{ $teacher->name }}</td>
+                                                    <td>{{ $teacher->teacher_name }}</td>
                                                     @if($teacher->category_id == 1)
                                                         <td>Language</td>
                                                     @elseif($teacher->category_id == 2)

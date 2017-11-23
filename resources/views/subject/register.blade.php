@@ -21,6 +21,13 @@
                 </h4>
             </div>
         @endif
+        @if (!empty($errors->first('standard')))
+            <div class="alert alert-danger" id="alert-message">
+                <ul>
+                    <li>{{ $errors->first('standard') }}</li>
+                </ul>
+            </div>
+        @endif
         <!-- Main row -->
         <div class="row  no-print">
             <div class="col-md-12">
@@ -41,7 +48,7 @@
                                     <div class="form-group">
                                         <label for="subject_name" class="col-sm-2 control-label"><b style="color: red;">* </b> Subject Name : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('subject_name')) ? 'has-error' : '' }}">
-                                            <input type="text" name="subject_name" class="form-control" id="subject_name" placeholder="Subject name" value="{{ old('subject_name') }}" tabindex="1">
+                                            <input type="text" name="subject_name" class="form-control" id="subject_name" placeholder="Subject name" value="{{ old('subject_name') }}" tabindex="1" maxlength="50">
                                             @if(!empty($errors->first('subject_name')))
                                                 <p style="color: red;" >{{$errors->first('subject_name')}}</p>
                                             @endif
@@ -54,8 +61,8 @@
                                                 <option value="" {{ empty(old('subject_category_id')) ? 'selected' : '' }}>Select subject category</option>
                                                 <option value="1" {{ old('subject_category_id')==1 ? 'selected' : '' }}>Language</option>
                                                 <option value="2" {{ old('subject_category_id')==2 ? 'selected' : '' }}>Science</option>
-                                                <option value="3" {{ old('subject_category_id')==3 ? 'selected' : '' }}>Extra Curricular</option>
-                                                <option value="4" {{ old('subject_category_id')==4 ? 'selected' : '' }}>Moral</option>
+                                                <option value="6" {{ old('subject_category_id')==6 ? 'selected' : '' }}>Extra Curricular</option>
+                                                <option value="7" {{ old('subject_category_id')==7 ? 'selected' : '' }}>Moral</option>
                                             </select>
                                             @if(!empty($errors->first('subject_category_id')))
                                                 <p style="color: red;" >{{$errors->first('subject_category_id')}}</p>
@@ -78,19 +85,19 @@
                                     <br>
                                     <div class="box-header with-border">
                                         <h3 class="box-title" style="float: left;">Subject - Standard Assignment</h3>
-                                        <p id="real_account_flag_message" style="color:blue;">&nbsp&nbsp&nbsp Select standards associated with subject.</p>
+                                        <p id="real_account_flag_message" style="color:blue;">&nbsp&nbsp&nbsp Select standards associated with the subject.</p>
                                     </div>
                                     <br>
                                     <div class="form-group">
-                                        <label for="description" class="col-sm-2 control-label">Options : </label>
+                                        <label for="description" class="col-sm-2 control-label"><b style="color: red;">* </b>Options : </label>
                                         <div class="col-sm-10">
                                             @if(!empty($standards))
                                             <table class="table table-bordered table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th style="width: 4%;">#</th>
+                                                        <th style="width: 4%;">&emsp;&emsp;#</th>
                                                         <th style="width: 48%;">Standard</th>
-                                                        <th style="width: 48%;">Sessions Per Week</th>
+                                                        <th style="width: 48%;">Maximum Sessions Per Week</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -100,17 +107,24 @@
                                                                 <div class="col-lg-6">
                                                                     <div class="input-group">
                                                                         <span class="input-group-addon">
-                                                                            <input type="checkbox" name="standard[]" class="standard" id="standard_{{ $index }}" value="{{ $standard->id }}" checked>
+                                                                            <input type="checkbox" class="standard" id="standard_checkbox_{{ $standard->id }}" value="{{ $standard->id }}" {{ !empty(old('standard.'. $standard->id)) ? "checked" : "" }}>
+                                                                            <input type="hidden" id="standard_{{ $standard->id }}" name="standard[{{ $standard->id }}]" value="{{ $standard->id }}" {{ empty(old('standard.'. $standard->id)) ? "disabled" : "" }}>
                                                                         </span>
                                                                     </div>
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <label for="standard_{{ $index }}" class="form-control">{{ $standard->standard_name }}</label>
+                                                                <label for="standard_checkbox_{{ $standard->id }}" class="form-control">{{ $standard->standard_name }}</label>
+                                                                @if(!empty($errors->first('standard.'.$standard->id)))
+                                                                    <p style="color: red;" >{{$errors->first('standard.'. $standard->id )}}</p>
+                                                                @endif
                                                             </td>
                                                             <td>
                                                                 <div class="col-lg-12">
-                                                                    <input type="text" name="no_of_session_per_week[{{ $standard->id }}]" class="form-control">
+                                                                    <input type="text" name="no_of_session_per_week[{{ $standard->id }}]" id="no_of_session_per_week_{{ $standard->id }}" class="form-control" value="{{ !empty(old('no_of_session_per_week.'. $standard->id)) ? old('no_of_session_per_week.'. $standard->id) : "" }}" {{ empty(old('standard.'. $standard->id)) ? "disabled" : "" }}>
+                                                                    @if(!empty($errors->first('no_of_session_per_week.'.$standard->id)))
+                                                                        <p style="color: red;" >{{ $errors->first('no_of_session_per_week.'.$standard->id) }}</p>
+                                                                    @endif
                                                                 </div>
                                                             </td>
                                                         </tr>

@@ -26,23 +26,20 @@
         <div class="row  no-print">
             <div class="col-md-12">
                 <div class="box">
-                    {{-- <div class="box-header">
-                        <h3 class="box-title">Filter List</h3>
-                    </div> --}}
                     <!-- /.box-header -->
                     <div class="box-header">
                         <form action="#" method="get" class="form-horizontal">
                             <div class="row">
-                                <div class="col-md-1"></div>
-                                <div class="col-md-10">
+                                <div class="col-md-2"></div>
+                                <div class="col-md-8">
                                     <div class="form-group">
-                                        <div class="col-sm-10 {{ !empty($errors->first('teacher_id')) ? 'has-error' : '' }}">
+                                        <div class="col-sm-12 {{ !empty($errors->first('teacher_id')) ? 'has-error' : '' }}">
                                             <label for="teacher_id" class="control-label">Teacher : </label>
                                             <select class="form-control" name="teacher_id" id="teacher_id" tabindex="3" style="width: 100%">
                                                 <option value="">Select teacher</option>
                                                 @if(!empty($teachers) && (count($teachers) > 0))
                                                     @foreach($teachers as $teacher)
-                                                        <option value="{{ $teacher->id }}" {{ ((old('teacher_id') == $teacher->id )) ? 'selected' : '' }}>{{ $teacher->name }}</option>
+                                                        <option value="{{ $teacher->id }}" {{ (($selectedTeacherId == $teacher->id )) ? 'selected' : '' }}>{{ $teacher->teacher_name }}</option>
                                                     @endforeach
                                                 @endif
                                             </select>
@@ -69,58 +66,69 @@
                 </div>
             </div>
         </div>
-        <!-- Main row -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="box">
-                    <div class="box-header">
-                        <h3 class="box-title">Timetable for teacher : <b>{{ !empty($selectedTeacherName) ? $selectedTeacherName : "nil" }}</b></h3>
-                    </div>
-                    <!-- /.box-header -->
-                    <div class="box-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <table class="table table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 12%;"></th>
-                                            @for($i=1; $i <=$noOfSession; $i++)
-                                                <th style="width: {{ 88/$noOfSession }}%;"><b>{{ $i }}</b></th>
-                                            @endfor
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach($sessions as $index => $session)
-                                        @if((($index +1)%$noOfSession) == 1)
+        @if(empty($noOfSession) || $noOfSession == 0)
+            <div class="alert alert-danger">
+                <h4>&emsp;&emsp;Settings changed! Current timetable is invalid.&emsp;Please regenerate timetable with new settings.</h4>
+            </div>
+        @else
+            <!-- Main row -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">
+                                Teacher's Timetable : &emsp;<b><i>{{ !empty($selectedTeacherName) ? $selectedTeacherName : "" }}</i></b>
+                            </h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
                                             <tr>
-                                                <td><b>{{ $session->day_name }}</b></td>
-                                        @endif
-                                        @foreach($timetable as $record)
-                                            @if($session->id == $record->session_id)
-                                            <?php $flag[$session->id] = 1; ?>
-                                                <td><b>{{ $record->combination->classRoom->standard->standard_name }}-{{ $record->combination->classRoom->division->division_name }}</b> / {{ $record->combination->subject->subject_name }}</td>
+                                                <th style="width: 12%;"></th>
+                                                @for($i=1; $i <=$noOfSession; $i++)
+                                                    <th style="width: {{ (88/$noOfSession) }}%;"><b>{{ $i }}</b></th>
+                                                @endfor
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach($sessions as $index => $session)
+                                            @if( (($index +1)%$noOfSession) == 1 )
+                                                <tr>
+                                                    <td><div style="height: 50px; overflow:auto;"><b>{{ $session->day_name }}</b></div></td>
+                                            @endif
+                                            @foreach($timetable as $record)
+                                                @if($session->id == $record->session_id)
+                                                <?php $flag[$session->id] = 1; ?>
+                                                    <td><b>{{ $record->combination->classRoom->standard->standard_name }}-{{ $record->combination->classRoom->division->division_name }}</b> / {{ $record->combination->subject->subject_name }}</td>
+                                                @endif
+                                            @endforeach
+                                            @if(empty($flag[$session->id]))
+                                                <td></td>
+                                            @endif
+                                            @if( (($index +1)%$noOfSession) == 0 )
+                                                </tr>
                                             @endif
                                         @endforeach
-                                        @if(empty($flag[$session->id]))
-                                            <td></td>
-                                        @endif
-                                        @if((($index +1)%$noOfSession) == 0)
-                                            </tr>
-                                        @endif
-                                    @endforeach
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
+                        <!-- /.box-body -->
                     </div>
-                    <!-- /.box-body -->
+                    <!-- /.boxy -->
                 </div>
-                <!-- /.boxy -->
+                <!-- /.col-md-12 -->
             </div>
-            <!-- /.col-md-12 -->
-        </div>
-        <!-- /.row (main row) -->
+            <!-- /.row (main row) -->
+        @endif
     </section>
     <!-- /.content -->
 </div>
+@endsection
+@section('scripts')
+    <script src="/js/results/timetable.js?rndstr={{ rand(1000,9999) }}"></script>
 @endsection

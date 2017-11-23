@@ -37,13 +37,27 @@ class ClassRoomController extends Controller
     public function registerAction(ClassRoomRegistrationRequest $request)
     {
         $combinationArr = [];
-        $roomNumber         = $request->get('room_number');
+        $roomNumber         = $request->get('room_id');
         $standardId         = $request->get('standard_id');
         $divisionId         = $request->get('division_id');
         $strength           = $request->get('strength');
-        $teacherInchargeId  = $request->get('teacher_incharge_id');
-        $subjects           = $request->get('subjects');
+        $teacherInchargeId  = $request->get('teacher_incharge_id');        
         $teacherId          = $request->get('teacher_id');
+
+        $uniqueFlag = ClassRoom::where('standard_id', $standardId)->where('division_id', $divisionId)->first();
+        if(!empty($uniqueFlag) || !empty($uniqueFlag->id)) {
+            return redirect()->back()->withInput()->with("message","Failed to save the class details. Standard - Division combination already exists!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+        }
+
+        $standard = Standard::find($standardId);
+        if(!empty($standard) && !empty($standard->id)) {
+            $subjects = $standard->subjects;
+            foreach ($subjects as $key => $subject) {
+                if(empty($teacherId[$subject->id])) {
+                    return redirect()->back()->withInput()->with("message","Failed to save the class details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+                }
+            }
+        }
 
         $classRoom = new ClassRoom;
         $classRoom->standard_id = $standardId;
@@ -53,11 +67,11 @@ class ClassRoomController extends Controller
         $classRoom->incharge_id = $teacherInchargeId;
         $classRoom->status      = 1;
         if($classRoom->save()) {
-            foreach ($subjects as $key => $subject) {
+            foreach ($subjects as $key => $subject) {                
                 $combinationArr[] = [
                     'class_room_id' => $classRoom->id,
-                    'subject_id'    => $subject,
-                    'teacher_id'    => $teacherId[$subject],
+                    'subject_id'    => $subject->id,
+                    'teacher_id'    => $teacherId[$subject->id],
                     'status'        => 1
                 ];
                 /*if(!empty($teacherId[$subject][2])) {

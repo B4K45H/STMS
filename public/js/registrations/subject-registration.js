@@ -1,26 +1,18 @@
 $(function () {
-    //new teacher registration link for select2
-    //teacherRegistrationLink = "No results found. <a href='/vehicle/register'>Register new teacher</a>";
-    
-    //Initialize Select2 Element for standard select box
+    //Initialize Select2 Element for subject category select box
     $("#subject_category_id").select2({
         minimumResultsForSearch: 5
     });
 
-    //Initialize Select2 Element for standard select box
-    $("#division_id").select2({
-        minimumResultsForSearch: 5
-    });
-
-    //Initialize Select2 Element for teacher incharge select box
-    $("#teacher_incharge_id").select2({
-        language: {
-             noResults: function() {
-                return teacherRegistrationLink;
-            }
-        },
-        escapeMarkup: function (markup) {
-            return markup;
+    $('body').on("change", ".standard", function () {
+        if($(this).is(":checked")) {
+            standardId = $(this).val();
+            $('#standard_'+ standardId).prop('disabled', false);
+            $('#no_of_session_per_week_'+ standardId).prop('disabled', false);
+        } else {
+            standardId = $(this).val();
+            $('#standard_'+ standardId).prop('disabled', true);
+            $('#no_of_session_per_week_'+ standardId).prop('disabled', true);
         }
     });
 });

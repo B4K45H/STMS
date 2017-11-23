@@ -69,7 +69,7 @@
           <!-- small box -->
           <div class="small-box bg-yellow">
             <div class="inner">
-              <h3>{{ !empty($teachersCount) ? $teachersCount : 0 }}</h3>
+              <h3>{{ !empty($teachersCount) ? ($teachersCount > 9 ? $teachersCount : ('0'.$teachersCount)) : '00' }}</h3>
 
               <p>Registered Teachers</p>
             </div>
@@ -84,7 +84,7 @@
           <!-- small box -->
           <div class="small-box bg-red">
             <div class="inner">
-              <h3>{{ !empty($classesCount) ? $classesCount : 0 }}</h3>
+              <h3>{{ !empty($classesCount) ? ($classesCount > 9 ? $classesCount : ('0'.$classesCount)) : '00' }}</h3>
 
               <p>Classes</p>
             </div>

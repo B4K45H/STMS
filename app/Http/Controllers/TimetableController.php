@@ -11,6 +11,7 @@ use App\Models\ClassRoom;
 use App\Models\Combination;
 use App\Models\Timetable;
 use App\Models\Standard;
+use App\Models\Leave;
 
 class TimetableController extends Controller
 {
@@ -26,23 +27,27 @@ class TimetableController extends Controller
         $sessions   = Session::where('status', 1)->get();
         $timetable  = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($teacherId) {
                                 $qry->where('teacher_id', $teacherId);
-                            })->get();
+                            })->with(['combination.classRoom.standard', 'combination.classRoom.division', 'combination.subject'])->get();
 
         if(!empty($teacherId)) {
             $selectedTeacher  = Teacher::find($teacherId);
-            $selectedTeacherName = $selectedTeacher->name;
+            $selectedTeacherName = $selectedTeacher->teacher_name;
         } else {
             $selectedClassRoomName = "";
         }
-
-        $noOfSession    = $settings->session_per_day;
+        if(!empty($settings) && !empty($settings->id)) {
+            $noOfSession = $settings->session_per_day;
+        } else {
+            $noOfSession = 0;
+        }
 
         return view('timetable.teacher-level', [
-                'noOfSession'   => $noOfSession,
-                'sessions'      => $sessions,
-                'selectedTeacherName' => $selectedTeacherName,
-                'teachers'      => $teachers,
-                'timetable'     => $timetable
+                'selectedTeacherId'     => $teacherId,
+                'noOfSession'           => $noOfSession,
+                'sessions'              => $sessions,
+                'selectedTeacherName'   => $selectedTeacherName,
+                'teachers'              => $teachers,
+                'timetable'             => $timetable
             ]);
     }
 
@@ -53,27 +58,31 @@ class TimetableController extends Controller
     {
         $classRoomId    = $request->get('class_room_id');
         $settings       = Settings::where('status', 1)->first();
-        $classRooms     = ClassRoom::where('status', 1)->get();
+        $classRooms     = ClassRoom::where('status', 1)->with(['standard', 'division'])->get();
         $sessions       = Session::where('status', 1)->get();
         $timetable      = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($classRoomId) {
                                 $qry->where('class_room_id', $classRoomId);
-                            })->get();
+                            })->with(['combination.subject', 'combination.teacher'])->get();
         if(!empty($classRoomId)) {
             $selectedClassRoom  = ClassRoom::find($classRoomId);
             $selectedClassRoomName = ($selectedClassRoom->standard->standard_name. " - ". $selectedClassRoom->division->division_name);
         } else {
             $selectedClassRoomName = "";
         }
-        $noOfSession    = $settings->session_per_day;
-        //$noOfDays       = $settings->working_days_in_week;
+
+        if(!empty($settings) && !empty($settings->id)) {
+            $noOfSession = $settings->session_per_day;
+        } else {
+            $noOfSession = 0;
+        }
 
         return view('timetable.student-level', [
-                'noOfSession'   => $noOfSession,
-                'sessions'      => $sessions,
+                'classRoomId'           => $classRoomId,
+                'noOfSession'           => $noOfSession,
+                'sessions'              => $sessions,
                 'selectedClassRoomName' => $selectedClassRoomName,
-                //'noOfDays'      => $noOfDays,
-                'classRooms'    => $classRooms,
-                'timetable'     => $timetable
+                'classRooms'            => $classRooms,
+                'timetable'             => $timetable
             ]);
     }
 
@@ -82,7 +91,18 @@ class TimetableController extends Controller
      */
     public function settings()
     {
-        return view('timetable.settings', []);
+        $noOfDays       = 0;
+        $noOfSession    = 0;
+        $settings       = Settings::first();
+
+        if(!empty($settings) && !empty($settings->id)) {
+            $noOfDays       = $settings->working_days_in_week;
+            $noOfSession    = $settings->session_per_day;
+        }
+        return view('timetable.settings', [
+                'noOfDays'      => $noOfDays,
+                'noOfSession'   => $noOfSession
+            ]);
     }
 
     /**
@@ -137,9 +157,16 @@ class TimetableController extends Controller
      */
     public function generateTimetableAction()
     {
+        // Get default request execution limit
+        $normalTimeLimit = ini_get('max_execution_time');
+
+        // Set new request execution limit
+        ini_set('max_execution_time', 300);
+
         $loopFlag               = true;
         $prevcombination        = 0;
         $beforeprevcombination  = 0;
+        $kgFirst                = "";
         $sessionTeacher         = [];
         $sessionClassRoom       = [];
         $noOfSessionPerWeek     = [];
@@ -147,18 +174,12 @@ class TimetableController extends Controller
         $timetableArray         = [];
         $classCombinationsArr   = [];
         $settings               = Settings::where('status', 1)->first();
-        $teachers               = Teacher::where('status', 1)->get();
         $sessions               = Session::where('status', 1)->get();
-        $classRooms             = ClassRoom::where('status', 1)->get();//->where('id', 1)
-        $combinations           = Combination::where('status', 1)->get();//->where('class_room_id', 1)
-        $standards              = Standard::where('status', 1)->get();
+        $classRooms             = ClassRoom::where('status', 1)->with('standard')->get();
+        $combinations           = Combination::where('status', 1)->get();
+        $standards              = Standard::where('status', 1)->with('subjects')->get();
 
         $noOfSessionPerDay  = $settings->session_per_day;
-        //$noOfDays           = $settings->working_days_in_week;
-        /* || $noOfSessionPerDay > count($combinations)*/
-        /*if($noOfSessionPerDay > count($teachers)) {
-            return redirect()->back()->withInput()->with("message","Failed to generate the timetable. Not enough resources available as per the current settings.")->with("alert-class","alert-danger");
-        }*/
 
         foreach ($standards as $standard) {
             foreach ($standard->subjects as $subject) {
@@ -177,50 +198,67 @@ class TimetableController extends Controller
             foreach ($sessions as $session) {
                 $loopCount  = 0;
                 do {
-                    $loopFlag   = true;
-                    $loopCount  = $loopCount + 1;
-                    //selecting a random combination of the current class
-                    $randomCombinationIndex = array_rand($classCombinationsArr[$classRoom->id]);
-                    $randomCombinationId    = $classCombinationsArr[$classRoom->id][$randomCombinationIndex]; //print_r($randomCombinationId."<br>");
-                    $combination = $combinations[$randomCombinationId-1];
-
-                    if($combination->id == $prevcombination && $combination->id == $beforeprevcombination) {
-                        continue;
-                    }
-
-                    $classRoomId    = $combination->class_room_id;
-                    $teacherId      = $combination->teacher_id;
-                    $subjectId      = $combination->subject_id;
-
-                    if(empty($classRoomSubjectCount[$classRoomId][$subjectId])) {
-                        $classRoomSubjectCount[$classRoomId][$subjectId] = 0;
-                    }
-                    
-                    if(empty($sessionTeacher[$session->id][$teacherId]) && empty($sessionClassRoom[$session->id][$classRoomId])) {
-                        if($noOfSessionPerWeek[$classRoom->standard->id][$subjectId] >= $classRoomSubjectCount[$classRoomId][$subjectId]) {
-                            $sessionTeacher[$session->id][$teacherId] = $classRoomId;
-                            $sessionClassRoom[$session->id][$classRoomId] = $teacherId;
-                            $classRoomSubjectCount[$classRoomId][$subjectId] = $classRoomSubjectCount[$classRoomId][$subjectId] + 1;
-
-                            $timetableArray[] = [
+                    //considering 2 sessions as 1 for kg classes
+                    if(($classRoom->standard->level < 3) && (($session->id % 2) == 0) && !empty($kgFirst)) {
+                        $timetableArray[] = [
                                 'session_id'        => $session->id,
-                                'combination_id'    => $combination->id,
+                                'combination_id'    => $kgFirst,
                                 'status'            => 1
                             ];
-                            //loop termination
-                            $loopFlag   = false;
-                            $loopCount  = 0;
-                            $beforeprevcombination  = $prevcombination;
-                            $prevcombination        = $combination->id;
-                        } else {
-                            if (($key = array_search($combination->id, $classCombinationsArr[$classRoom->id])) !== false) {
-                                unset($classCombinationsArr[$classRoom->id][$key]);
+                        $kgFirst    = "";
+                    } else {
+                        $loopFlag   = true;
+                        $loopCount  = $loopCount + 1;
+                        //selecting a random combination of the current class
+                        $randomCombinationIndex = array_rand($classCombinationsArr[$classRoom->id]);
+                        $randomCombinationId    = $classCombinationsArr[$classRoom->id][$randomCombinationIndex]; //print_r($randomCombinationId."<br>");
+                        $combination = $combinations[$randomCombinationId-1];
+
+                        if(($combination->id == $prevcombination && $combination->id == $beforeprevcombination) || ((($session->id % $noOfSessionPerDay) == 1) && ($combination->subject->category_id) > 5)) {
+                            continue;
+                        }
+
+                        $classRoomId    = $combination->class_room_id;
+                        $teacherId      = $combination->teacher_id;
+                        $subjectId      = $combination->subject_id;
+
+                        if(empty($classRoomSubjectCount[$classRoomId][$subjectId])) {
+                            $classRoomSubjectCount[$classRoomId][$subjectId] = 0;
+                        }
+                        
+                        if(empty($sessionTeacher[$session->id][$teacherId]) && empty($sessionClassRoom[$session->id][$classRoomId])) {
+                            if($noOfSessionPerWeek[$classRoom->standard->id][$subjectId] >= $classRoomSubjectCount[$classRoomId][$subjectId]) {
+                                $sessionTeacher[$session->id][$teacherId] = $classRoomId;
+                                $sessionClassRoom[$session->id][$classRoomId] = $teacherId;
+                                $classRoomSubjectCount[$classRoomId][$subjectId] = $classRoomSubjectCount[$classRoomId][$subjectId] + 1;
+
+                                $timetableArray[] = [
+                                    'session_id'        => $session->id,
+                                    'combination_id'    => $combination->id,
+                                    'status'            => 1
+                                ];
+                                //considering 2 sessions as 1 for kg classes
+                                if(($classRoom->standard->level < 3) && (($session->id % 2) != 0) && empty($kgFirst)) {
+                                    $kgFirst = $combination->id;
+                                }
+                                //loop termination
+                                $loopFlag   = false;
+                                $loopCount  = 0;
+                                $beforeprevcombination  = $prevcombination;
+                                $prevcombination        = $combination->id;
+                            } else {
+                                if (($key = array_search($combination->id, $classCombinationsArr[$classRoom->id])) !== false) {
+                                    unset($classCombinationsArr[$classRoom->id][$key]);
+                                }
                             }
                         }
                     }
                 } while($loopFlag && $loopCount <= 100);
 
-                if(empty($sessionClassRoom[$session->id][$classRoom->id])) {
+                if(empty($sessionClassRoom[$session->id][$classRoom->id]) && !(($classRoom->standard->level < 3) && (($session->id % 2) == 0))) {
+                    // Restore to default request execution limit
+                    ini_set('max_execution_time', $normalTimeLimit); 
+
                     return redirect()->back()->withInput()->with("message","Failed to generate the timetable. Not enough resources available as per the current settings. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
                 }
             }
@@ -231,9 +269,37 @@ class TimetableController extends Controller
         $timetable = Timetable::insert($timetableArray);
 
         if($timetable) {
+            // Restore to default request execution limit
+            ini_set('max_execution_time', $normalTimeLimit); 
+
             return redirect()->back()->withInput()->with("message","Timetable generated successfully")->with("alert-class","alert-success");
         } else {
+            // Restore to default request execution limit
+            ini_set('max_execution_time', $normalTimeLimit); 
+
             return redirect()->back()->withInput()->with("message","Failed to generate the timetable. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+        }
+        // Restore to default request execution limit
+        ini_set('max_execution_time', $normalTimeLimit); 
+    }
+
+    /**
+     * Return view for substitution
+     */
+    public function leaveRegisterAction(Request $request)
+    {
+        $teacherId  = $request->get('teacher_id');
+        $leaveDate  = $request->get('leave_date');
+
+        $leaveDate  = date('Y-m-d', strtotime($leaveDate));
+        $leave = new Leave;
+        $leave->teacher_id  = $teacherId;
+        $leave->date        = $leaveDate;
+        $leave->status      = 1;
+        if($leave->save()) {
+            return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
+        } else {
+            return redirect()->back()->withInput()->with("message","Failed to save the leave details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
         }
     }
 
@@ -244,9 +310,14 @@ class TimetableController extends Controller
     {
         $selectedTeacherName = "";
         $teacherId  = $request->get('teacher_id');
-        $dayIndex   = !empty($request->get('day_index')) ? $request->get('day_index') : 0;
+        $selectedDate   = $request->get('date');
+        $timestamp  = strtotime($selectedDate);
+        $dayIndex   = (date('w', $timestamp)+1);
+        //$dayIndex   = !empty($request->get('day_index')) ? $request->get('day_index') : 0;
+        $excludeArr = Leave::where('date', date('Y-m-d', strtotime($selectedDate)))->pluck('id')->toArray();
+        $teacherCombo = Teacher::where('status', 1)->get();
         $settings   = Settings::where('status', 1)->first();
-        $teachers   = Teacher::where('status', 1)->get();
+        $teachers   = Teacher::where('status', 1)->whereNotIN('id', $excludeArr)->get();
         $sessions   = Session::where('status', 1)->where('day_index', $dayIndex)->get();
         $timetable  = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($teacherId) {
                                 $qry->where('teacher_id', $teacherId);
@@ -266,10 +337,8 @@ class TimetableController extends Controller
                 'sessions'      => $sessions,
                 'selectedTeacherName' => $selectedTeacherName,
                 'teachers'      => $teachers,
+                'teacherCombo'  => $teacherCombo,
                 'timetable'     => $timetable
             ]);
     }
 }
-/*$flag = Timetable::where('session_id', $session->id)->whereHas('combination', function ($qry) use($classRoomId, $teacherId) {
-                                $qry->where('class_id', $classRoomId)->orWhere('teacher_id', $teacherId);
-                            })->count();*/

@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-//use App\Http\Requests\ProductRegistrationRequest;
 use App\Models\Subject;
 use App\Models\Standard;
+use App\Http\Requests\SubjectRegistrationRequest;
 
 class SubjectController extends Controller
 {
     /**
-     * Return view for product registration
+     * Return view for subject registration
      */
     public function register()
     {
@@ -25,7 +25,7 @@ class SubjectController extends Controller
      /**
      * Handle new subject registration
      */
-    public function registerAction(Request $request)
+    public function registerAction(SubjectRegistrationRequest $request)
     {
         $standardSubjectArr = [];
         $name               = $request->get('subject_name');

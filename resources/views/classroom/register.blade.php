@@ -21,6 +21,30 @@
                 </h4>
             </div>
         @endif
+        {{-- @if (count($errors) > 0)
+            <div class="alert alert-danger" id="alert-message">
+                <ul>
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif --}}
+        @if (!empty($errors->first('teacher_id')))
+            <div class="alert alert-danger" id="alert-message">
+                <ul>
+                    <li> {{ $errors->first('teacher_id') }} </li>
+                </ul>
+            </div>
+        @endif
+        @if (!empty($errors->first('teacher_id.*')))
+            <div class="alert alert-danger" id="alert-message">
+                <ul>
+                    <li>{{ $errors->first('teacher_id.*') }} </li>
+                    <li>Reselect the standard field.</li>
+                </ul>
+            </div>
+        @endif
         <!-- Main row -->
         <div class="row  no-print">
             <div class="col-md-12">
@@ -39,11 +63,11 @@
                             <div class="row">
                                 <div class="col-md-11">
                                     <div class="form-group">
-                                        <label for="room_number" class="col-sm-2 control-label"><b style="color: red;">* </b> Room Number : </label>
-                                        <div class="col-sm-10 {{ !empty($errors->first('room_number')) ? 'has-error' : '' }}">
-                                            <input type="text" name="room_number" class="form-control" id="room_number" placeholder="Room number" value="{{ old('room_number') }}" tabindex="1">
-                                            @if(!empty($errors->first('room_number')))
-                                                <p style="color: red;" >{{$errors->first('room_number')}}</p>
+                                        <label for="room_id" class="col-sm-2 control-label"><b style="color: red;">* </b> Room Number : </label>
+                                        <div class="col-sm-10 {{ !empty($errors->first('room_id')) ? 'has-error' : '' }}">
+                                            <input type="text" name="room_id" class="form-control" id="room_id" placeholder="Room number" value="{{ old('room_id') }}" tabindex="1">
+                                            @if(!empty($errors->first('room_id')))
+                                                <p style="color: red;" >{{$errors->first('room_id')}}</p>
                                             @endif
                                         </div>
                                     </div>
@@ -51,15 +75,18 @@
                                         <label class="col-sm-2 control-label"><b style="color: red;">* </b>Standard : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('standard_id')) ? 'has-error' : '' }}">
                                             <select class="form-control" name="standard_id" id="standard_id" tabindex="2">
-                                                <option value="" {{ empty(old('standard_id')) ? 'selected' : '' }}>Select standard</option>
+                                                <option value="" selected>Select standard</option>
                                                 @if(!empty($standards))
                                                     @foreach($standards as $standard)
-                                                        <option value="{{ $standard->id }}" {{ (old('standard_id')== $standard->id) ? 'selected' : '' }}>{{ $standard->standard_name }}</option>
+                                                        <option value="{{ $standard->id }}">Standard - {{ $standard->standard_name }}</option>
                                                     @endforeach
                                                 @endif
                                             </select>
                                             @if(!empty($errors->first('standard_id')))
                                                 <p style="color: red;" >{{$errors->first('standard_id')}}</p>
+                                            @endif
+                                            @if (!empty($errors->first('teacher_id.*')))
+                                                <p style="color: red;" >Reselect the standard field.</p>
                                             @endif
                                         </div>
                                     </div>
@@ -95,7 +122,7 @@
                                                 <option value="" {{ empty(old('teacher_incharge_id')) ? 'selected' : '' }}>Select incharge</option>
                                                 @if(!empty($teachers))
                                                     @foreach($teachers as $teacher)
-                                                        <option value="{{ $teacher->id }}" {{ (old('teacher_incharge_id')== $teacher->id) ? 'selected' : '' }}>{{ $teacher->name }}</option>
+                                                        <option value="{{ $teacher->id }}" {{ (old('teacher_incharge_id')== $teacher->id) ? 'selected' : '' }}>{{ $teacher->teacher_name }}</option>
                                                     @endforeach
                                                 @endif
                                             </select>
@@ -111,7 +138,7 @@
                                     </div>
                                     <br>
                                     <div class="form-group">
-                                        <label for="description" class="col-sm-2 control-label">Options : </label>
+                                        <label for="description" class="col-sm-2 control-label"><b style="color: red;">* </b>Options : </label>
                                         <div class="col-sm-10">
                                             @if(!empty($subjects))
                                                 <table class="table table-bordered table-hover">
@@ -122,7 +149,7 @@
                                                             <th style="width: 48%;">Teacher</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody class="subject_teacher_assignment_div">
+                                                    <tbody id="subject_teacher_assignment_container">
                                                         @foreach($subjects as $index=>$subject)
                                                             <tr>
                                                                 <td>
@@ -130,17 +157,11 @@
                                                                 </td>
                                                                 <td>
                                                                     <label for="subject_{{ $index }}" class="form-control">{{ $subject->subject_name }}</label>
-                                                                    <input type="hidden" name="subjects[]" value="{{ $subject->id }}">
                                                                 </td>
                                                                 <td>
                                                                     <div class="col-lg-12">
-                                                                        <select class="form-control" name="teacher_id[{{ $subject->id }}]" id="teacher_id" tabindex="5">
+                                                                        <select class="form-control" name="teacher_id[{{ $subject->id }}]" id="teacher_id" tabindex="5" disabled>
                                                                             <option value="" {{ empty(old('teacher_id')) ? 'selected' : '' }}>Select teacher</option>
-                                                                            @if(!empty($teachers))
-                                                                                @foreach($teachers as $teacher)
-                                                                                    <option value="{{ $teacher->id }}" {{ (old('teacher_id')== $teacher->id) ? 'selected' : '' }}>{{ $teacher->name }}</option>
-                                                                                @endforeach
-                                                                            @endif
                                                                         </select>
                                                                     </div>
                                                                 </td>
@@ -148,6 +169,7 @@
                                                         @endforeach
                                                     </tbody>
                                                 </table>
+                                                <div id="no_rows_error_container"></div>
                                             @endif
                                         </div>
                                     </div>

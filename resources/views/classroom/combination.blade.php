@@ -49,9 +49,8 @@
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
                                                     <td>{{ $className }}</td>
-                                                    {{-- <td>{{ $combination->classRoom->division->division_name }}</td> --}}
                                                     <td>{{ $combination->subject->subject_name }}</td>
-                                                    <td>{{ $combination->teacher->name }}</td>
+                                                    <td>{{ $combination->teacher->teacher_name }}</td>
                                                 </tr>
                                             @endforeach
                                         @endif

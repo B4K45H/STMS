@@ -98,7 +98,7 @@
                 </li>
                 <li class="treeview {{ Request::is('teacher/*')? 'active' : '' }}">
                     <a href="#">
-                        <i class="fa fa-user"></i>
+                        <i class="fa fa-user-md"></i>
                         <span>Teacher</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>

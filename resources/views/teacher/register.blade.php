@@ -50,7 +50,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label"><b style="color: red;">* </b>Teaching Category : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('category_id')) ? 'has-error' : '' }}">
-                                            <select class="form-control" name="category_id" id="category_id" tabindex="2">
+                                            <select class="form-control" name="category_id" id="category_id" tabindex="2" style="width: 100%;">
                                                 <option value="" {{ empty(old('category_id')) ? 'selected' : '' }}>Select teaching category</option>
                                                 <option value="1" {{ old('category_id')==1 ? 'selected' : '' }}>Language</option>
                                                 <option value="2" {{ old('category_id')==2 ? 'selected' : '' }}>Science</option>
@@ -85,16 +85,19 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label"><b style="color: red;">* </b>Experience Level   : </label>
-                                        <div class="col-sm-10 {{ !empty($errors->first('experience_level')) ? 'has-error' : '' }}">
-                                            <select class="form-control" name="experience_level" id="experience_level" tabindex="6">
-                                                <option value="" {{ empty(old('experience_level')) ? 'selected' : '' }}>Select experience level</option>
-                                                <option value="1" {{ old('experience_level')==1 ? 'selected' : '' }}>Level A</option>
-                                                <option value="2" {{ old('experience_level')==2 ? 'selected' : '' }}>Level B</option>
-                                                <option value="3" {{ old('experience_level')==3 ? 'selected' : '' }}>Level C</option>
+                                        <label class="col-sm-2 control-label"><b style="color: red;">* </b>Teaching Level   : </label>
+                                        <div class="col-sm-10 {{ !empty($errors->first('teacher_level')) ? 'has-error' : '' }}">
+                                            <select class="form-control" name="teacher_level" id="teacher_level" tabindex="6">
+                                                <option value="" {{ empty(old('teacher_level')) ? 'selected' : '' }}>Select teaching level</option>
+                                                <option value="1" {{ old('teacher_level')==1 ? 'selected' : '' }}>Pre Primary</option>
+                                                <option value="2" {{ old('teacher_level')==2 ? 'selected' : '' }}>Lower Primary</option>
+                                                <option value="3" {{ old('teacher_level')==3 ? 'selected' : '' }}>Upper Primary</option>
+                                                <option value="4" {{ old('teacher_level')==3 ? 'selected' : '' }}>High School</option>
+                                                <option value="5" {{ old('teacher_level')==3 ? 'selected' : '' }}>Higher Secondary School</option>
+                                                <option value="6" {{ old('teacher_level')==1 ? 'selected' : '' }}>All</option>
                                             </select>
-                                            @if(!empty($errors->first('experience_level')))
-                                                <p style="color: red;" >{{$errors->first('experience_level')}}</p>
+                                            @if(!empty($errors->first('teacher_level')))
+                                                <p style="color: red;" >{{$errors->first('teacher_level')}}</p>
                                             @endif
                                         </div>
                                     </div>
@@ -121,4 +124,7 @@
     </section>
     <!-- /.content -->
 </div>
+@endsection
+@section('scripts')
+    <script src="/js/registrations/teacher-registration.js?rndstr={{ rand(1000,9999) }}"></script>
 @endsection
