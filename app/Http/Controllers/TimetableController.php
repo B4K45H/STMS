@@ -12,6 +12,7 @@ use App\Models\Combination;
 use App\Models\Timetable;
 use App\Models\Standard;
 use App\Models\Leave;
+use App\Http\Requests\LeaveRegistrationRequest;
 
 class TimetableController extends Controller
 {
@@ -166,7 +167,8 @@ class TimetableController extends Controller
         $loopFlag               = true;
         $prevcombination        = 0;
         $beforeprevcombination  = 0;
-        $kgFirst                = "";
+        $kgFirstCombination     = [];
+        $kgFirstTeacher         = [];
         $sessionTeacher         = [];
         $sessionClassRoom       = [];
         $noOfSessionPerWeek     = [];
@@ -195,17 +197,24 @@ class TimetableController extends Controller
         }
 
         foreach ($classRooms as $classRoom) {
+            $kgFirstCombination[$classRoom->id] = "";
+            $kgFirstTeacher[$classRoom->id]     = "";
+
             foreach ($sessions as $session) {
                 $loopCount  = 0;
                 do {
                     //considering 2 sessions as 1 for kg classes
-                    if(($classRoom->standard->level < 3) && (($session->id % 2) == 0) && !empty($kgFirst)) {
+                    if(($classRoom->standard->level < 3) && (($session->id % 2) == 0) && !empty($kgFirstCombination[$classRoom->id])) {
                         $timetableArray[] = [
                                 'session_id'        => $session->id,
-                                'combination_id'    => $kgFirst,
+                                'combination_id'    => $kgFirstCombination[$classRoom->id],
                                 'status'            => 1
                             ];
-                        $kgFirst    = "";
+
+                        $sessionTeacher[$session->id][$kgFirstTeacher[$classRoom->id]] = $classRoom->id;
+                        $sessionClassRoom[$session->id][$classRoom->id] = $kgFirstTeacher[$classRoom->id];
+                        $kgFirstCombination[$classRoom->id] = "";
+                        $kgFirstTeacher[$classRoom->id]     = "";
                     } else {
                         $loopFlag   = true;
                         $loopCount  = $loopCount + 1;
@@ -238,8 +247,9 @@ class TimetableController extends Controller
                                     'status'            => 1
                                 ];
                                 //considering 2 sessions as 1 for kg classes
-                                if(($classRoom->standard->level < 3) && (($session->id % 2) != 0) && empty($kgFirst)) {
-                                    $kgFirst = $combination->id;
+                                if(($classRoom->standard->level < 3) && (($session->id % 2) != 0) && empty($kgFirstCombination[$classRoom->id])) {
+                                    $kgFirstCombination[$classRoom->id] = $combination->id;
+                                    $kgFirstTeacher[$classRoom->id]     = $teacherId;
                                 }
                                 //loop termination
                                 $loopFlag   = false;
@@ -255,7 +265,7 @@ class TimetableController extends Controller
                     }
                 } while($loopFlag && $loopCount <= 100);
 
-                if(empty($sessionClassRoom[$session->id][$classRoom->id]) && !(($classRoom->standard->level < 3) && (($session->id % 2) == 0))) {
+                if(empty($sessionClassRoom[$session->id][$classRoom->id])) { /* && !(($classRoom->standard->level < 3) && (($session->id % 2) == 0))) {*/
                     // Restore to default request execution limit
                     ini_set('max_execution_time', $normalTimeLimit); 
 
@@ -286,7 +296,7 @@ class TimetableController extends Controller
     /**
      * Return view for substitution
      */
-    public function leaveRegisterAction(Request $request)
+    public function leaveRegisterAction(LeaveRegistrationRequest $request)
     {
         $teacherId  = $request->get('teacher_id');
         $leaveDate  = $request->get('leave_date');
@@ -308,37 +318,66 @@ class TimetableController extends Controller
      */
     public function substitution(Request $request)
     {
-        $selectedTeacherName = "";
-        $teacherId  = $request->get('teacher_id');
-        $selectedDate   = $request->get('date');
-        $timestamp  = strtotime($selectedDate);
-        $dayIndex   = (date('w', $timestamp)+1);
-        //$dayIndex   = !empty($request->get('day_index')) ? $request->get('day_index') : 0;
-        $excludeArr = Leave::where('date', date('Y-m-d', strtotime($selectedDate)))->pluck('id')->toArray();
-        $teacherCombo = Teacher::where('status', 1)->get();
-        $settings   = Settings::where('status', 1)->first();
-        $teachers   = Teacher::where('status', 1)->whereNotIN('id', $excludeArr)->get();
-        $sessions   = Session::where('status', 1)->where('day_index', $dayIndex)->get();
-        $timetable  = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($teacherId) {
-                                $qry->where('teacher_id', $teacherId);
-                            })->get();
+        $teacherId          = $request->get('leave_teacher_id');
+        $substitutionDate   = $request->get('sub_date');
 
-        if(!empty($teacherId)) {
-            $selectedTeacher  = Teacher::find($teacherId);
-            $selectedTeacherName = $selectedTeacher->name;
-        } else {
-            $selectedClassRoomName = "";
+        $dayIndex               = 0;
+        $leaveExcludeArr        = [];
+        $engageExcludeArr       = [];
+        $leavetimetableSessions = [];
+        $leavetimetable         = [];
+        $leaveTeacherName       = "";
+        
+        if(!empty($substitutionDate) && !empty($substitutionDate)) {
+            $timestamp      = strtotime($substitutionDate);
+            $dayIndex       = (date('w', $timestamp)+1);
+            //excluding leave teachers
+            $leaveExcludeArr     = Leave::where('date', date('Y-m-d', strtotime($substitutionDate)))->pluck('teacher_id')->toArray();
+
+            $leavetimetable  = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($teacherId) {
+                                            $qry->where('teacher_id', $teacherId);
+                                        })->whereHas('session', function ($qry) use($dayIndex) {
+                                            $qry->where('day_index', $dayIndex);
+                                        })->with('combination')->get();
+
+            foreach ($leavetimetable as $key => $record) {
+                array_push($leavetimetableSessions, $record->combination->session_id);
+            }
+
+            $timetable = Timetable::where('status', 1)->whereIn('session_id', $leavetimetableSessions)->with('combination')->get();
+            
+            foreach ($timetable as $key => $record) {
+                if(empty($engageExcludeArr[$session_id])) {
+                    $engageExcludeArr[$session_id] = [];
+                }
+                array_push($engageExcludeArr[$session_id], $record->combination->teacher_id);
+            }
+
+            if(!empty($teacherId)) {
+                $selectedTeacher    = Teacher::find($teacherId);
+                $leaveTeacherName   = $selectedTeacher->name;
+            } else {
+                $leaveTeacherName = "";
+            }
         }
+
+        $teacherCombo   = Teacher::where('status', 1)->get();
+        $settings       = Settings::where('status', 1)->first();
+        $teachers       = Teacher::where('status', 1)->whereNotIN('id', $leaveExcludeArr)->get();
+        $sessions       = Session::where('status', 1)->where('day_index', $dayIndex)->get();
+        /*$timetable      = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($teacherId) {
+                                $qry->where('teacher_id', $teacherId);
+                            })->get();*/
 
         $noOfSession    = $settings->session_per_day;
 
         return view('timetable.substitution', [
-                'noOfSession'   => $noOfSession,
-                'sessions'      => $sessions,
-                'selectedTeacherName' => $selectedTeacherName,
-                'teachers'      => $teachers,
-                'teacherCombo'  => $teacherCombo,
-                'timetable'     => $timetable
+                'noOfSession'       => $noOfSession,
+                'sessions'          => $sessions,
+                'leaveTeacherName'  => $leaveTeacherName,
+                'teachers'          => $teachers,
+                'teacherCombo'      => $teacherCombo,
+                'timetable'         => $leavetimetable
             ]);
     }
 }

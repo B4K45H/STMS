@@ -44,7 +44,7 @@
                                                 <option value="">Select teacher</option>
                                                 @if(!empty($teachers) && (count($teachers) > 0))
                                                     @foreach($teachers as $teacher)
-                                                        <option value="{{ $teacher->id }}">{{ $teacher->teacher_name }}</option>
+                                                        <option value="{{ $teacher->id }}" {{ old('teacher_id') == $teacher->id ? "selected" : "" }}>{{ $teacher->teacher_name }}</option>
                                                     @endforeach
                                                 @endif
                                             </select>
@@ -54,7 +54,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="leave_date" class="col-sm-2 control-label">Select Date : </label>
+                                        <label for="leave_date" class="col-sm-2 control-label">Leave Date : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('leave_date')) ? 'has-error' : '' }}">
                                             <input type="text" name="leave_date" class="form-control datepicker" placeholder="select date." value="{{ !empty(old('leave_date')) ? old('leave_date') : '' }}" id="datepicker1" tabindex="7">
                                             @if(!empty($errors->first('leave_date')))
@@ -105,25 +105,25 @@
                                 <div class="col-md-1"></div>
                                 <div class="col-md-10">
                                     <div class="form-group">
-                                        <div class="col-sm-6 {{ !empty($errors->first('teacher_id')) ? 'has-error' : '' }}">
-                                            <label for="teacher_id" class="control-label">Teacher : </label>
-                                            <select class="form-control" name="teacher_id" id="teacher_id" tabindex="3" style="width: 100%">
+                                        <div class="col-sm-6 {{ !empty($errors->first('leave_teacher_id')) ? 'has-error' : '' }}">
+                                            <label for="leave_teacher_id" class="control-label">Teacher Name : </label>
+                                            <select class="form-control" name="leave_teacher_id" id="leave_teacher_id" tabindex="3" style="width: 100%">
                                                 <option value="">Select teacher</option>
                                                 @if(!empty($teacherCombo) && (count($teachers) > 0))
                                                     @foreach($teachers as $teacher)
-                                                        <option value="{{ $teacher->id }}" {{ ((old('teacher_id') == $teacher->id )) ? 'selected' : '' }}>{{ $teacher->teacher_name }}</option>
+                                                        <option value="{{ $teacher->id }}" {{ ((old('leave_teacher_id') == $teacher->id )) ? 'selected' : '' }}>{{ $teacher->teacher_name }}</option>
                                                     @endforeach
                                                 @endif
                                             </select>
-                                            @if(!empty($errors->first('teacher_id')))
-                                                <p style="color: red;" >{{$errors->first('teacher_id')}}</p>
+                                            @if(!empty($errors->first('leave_teacher_id')))
+                                                <p style="color: red;" >{{$errors->first('leave_teacher_id')}}</p>
                                             @endif
                                         </div>
-                                        <div class="col-sm-6 {{ !empty($errors->first('day_index')) ? 'has-error' : '' }}">
-                                            <label for="day_index" class="control-label">Week Day : </label>
-                                            <input type="text" name="date" class="form-control datepicker" placeholder="select date." value="{{ !empty(old('date')) ? old('date') : '' }}" id="datepicker2" tabindex="7">
-                                            @if(!empty($errors->first('date')))
-                                                <p style="color: red;" >{{$errors->first('date')}}</p>
+                                        <div class="col-sm-6 {{ !empty($errors->first('sub_date')) ? 'has-error' : '' }}">
+                                            <label for="sub_date" class="control-label">Date : </label>
+                                            <input type="text" name="sub_date" class="form-control datepicker" placeholder="select date." value="{{ !empty(old('date')) ? old('sub_date') : '' }}" id="datepicker2" tabindex="7">
+                                            @if(!empty($errors->first('sub_date')))
+                                                <p style="color: red;" >{{$errors->first('sub_date')}}</p>
                                             @endif
                                             {{-- <select class="form-control" name="day_index" id="day_index" tabindex="3" style="width: 100%">
                                                 <option value="">Select day</option>
@@ -162,7 +162,7 @@
             <div class="col-md-12">
                 <div class="box">
                     <div class="box-header">
-                        <h3 class="box-title">Timetable for teacher : <b>{{ !empty($selectedTeacherName) ? $selectedTeacherName : "nil" }}</b></h3>
+                        <h3 class="box-title">Timetable : <b>{{ !empty($selectedTeacherName) ? $selectedTeacherName : "" }}</b></h3>
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body">
