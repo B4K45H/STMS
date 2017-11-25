@@ -62,7 +62,13 @@ Route::group(['middleware' => 'auth.check'], function () {
         Route::get('/timetable/settings', 'TimetableController@settings')->name('timetable-settings');
         Route::post('/timetable/settings/action', 'TimetableController@settingsAction')->name('timetable-settings-action');
         Route::post('/timetable/generate/action', 'TimetableController@generateTimetableAction')->name('timetable-generation-action');
-        Route::get('/timetable/substitution', 'TimetableController@substitution')->name('timetable-substitution');
-        Route::Post('/timetable/substitution/leave/register/action', 'TimetableController@leaveRegisterAction')->name('teacher-leave-register-action');
+        
+        //substitution - leave
+        Route::get('/substitution/leave/register', 'LeaveController@leaveRegister')->name('substitution-leave-register');
+        Route::Post('/substitution/leave/register/action', 'LeaveController@leaveRegisterAction')->name('teacher-leave-register-action');
+
+        //substitution
+        Route::get('/substitution/register', 'SubstitutionController@substitution')->name('substitution-register');
+        Route::post('/substitution/register/action', 'SubstitutionController@substitutionAction')->name('substitution-register-action');
     });
 });

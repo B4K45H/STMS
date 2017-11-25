@@ -16,12 +16,17 @@ $(function () {
     $("#teacher_id").select2({
         minimumResultsForSearch: 5
     });
+
+    //Initialize Select2 Element for teacher select box
+    $(".teacher_select").select2({
+        minimumResultsForSearch: 5
+    });
     
     //Initialize Select2 Element for teacher select box
     $("#leave_teacher_id").select2({
         minimumResultsForSearch: 5
     });
-    
+
     $("#class_room_id").select2({
         minimumResultsForSearch: 5
     });

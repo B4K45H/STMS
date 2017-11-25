@@ -11,8 +11,6 @@ use App\Models\ClassRoom;
 use App\Models\Combination;
 use App\Models\Timetable;
 use App\Models\Standard;
-use App\Models\Leave;
-use App\Http\Requests\LeaveRegistrationRequest;
 
 class TimetableController extends Controller
 {
@@ -291,93 +289,5 @@ class TimetableController extends Controller
         }
         // Restore to default request execution limit
         ini_set('max_execution_time', $normalTimeLimit); 
-    }
-
-    /**
-     * Return view for substitution
-     */
-    public function leaveRegisterAction(LeaveRegistrationRequest $request)
-    {
-        $teacherId  = $request->get('teacher_id');
-        $leaveDate  = $request->get('leave_date');
-
-        $leaveDate  = date('Y-m-d', strtotime($leaveDate));
-        $leave = new Leave;
-        $leave->teacher_id  = $teacherId;
-        $leave->date        = $leaveDate;
-        $leave->status      = 1;
-        if($leave->save()) {
-            return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
-        } else {
-            return redirect()->back()->withInput()->with("message","Failed to save the leave details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
-        }
-    }
-
-    /**
-     * Return view for substitution
-     */
-    public function substitution(Request $request)
-    {
-        $teacherId          = $request->get('leave_teacher_id');
-        $substitutionDate   = $request->get('sub_date');
-
-        $dayIndex               = 0;
-        $leaveExcludeArr        = [];
-        $engageExcludeArr       = [];
-        $leavetimetableSessions = [];
-        $leavetimetable         = [];
-        $leaveTeacherName       = "";
-        
-        if(!empty($substitutionDate) && !empty($substitutionDate)) {
-            $timestamp      = strtotime($substitutionDate);
-            $dayIndex       = (date('w', $timestamp)+1);
-            //excluding leave teachers
-            $leaveExcludeArr     = Leave::where('date', date('Y-m-d', strtotime($substitutionDate)))->pluck('teacher_id')->toArray();
-
-            $leavetimetable  = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($teacherId) {
-                                            $qry->where('teacher_id', $teacherId);
-                                        })->whereHas('session', function ($qry) use($dayIndex) {
-                                            $qry->where('day_index', $dayIndex);
-                                        })->with('combination')->get();
-
-            foreach ($leavetimetable as $key => $record) {
-                array_push($leavetimetableSessions, $record->combination->session_id);
-            }
-
-            $timetable = Timetable::where('status', 1)->whereIn('session_id', $leavetimetableSessions)->with('combination')->get();
-            
-            foreach ($timetable as $key => $record) {
-                if(empty($engageExcludeArr[$session_id])) {
-                    $engageExcludeArr[$session_id] = [];
-                }
-                array_push($engageExcludeArr[$session_id], $record->combination->teacher_id);
-            }
-
-            if(!empty($teacherId)) {
-                $selectedTeacher    = Teacher::find($teacherId);
-                $leaveTeacherName   = $selectedTeacher->name;
-            } else {
-                $leaveTeacherName = "";
-            }
-        }
-
-        $teacherCombo   = Teacher::where('status', 1)->get();
-        $settings       = Settings::where('status', 1)->first();
-        $teachers       = Teacher::where('status', 1)->whereNotIN('id', $leaveExcludeArr)->get();
-        $sessions       = Session::where('status', 1)->where('day_index', $dayIndex)->get();
-        /*$timetable      = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($teacherId) {
-                                $qry->where('teacher_id', $teacherId);
-                            })->get();*/
-
-        $noOfSession    = $settings->session_per_day;
-
-        return view('timetable.substitution', [
-                'noOfSession'       => $noOfSession,
-                'sessions'          => $sessions,
-                'leaveTeacherName'  => $leaveTeacherName,
-                'teachers'          => $teachers,
-                'teacherCombo'      => $teacherCombo,
-                'timetable'         => $leavetimetable
-            ]);
     }
 }

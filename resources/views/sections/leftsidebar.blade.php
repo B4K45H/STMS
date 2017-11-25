@@ -68,8 +68,24 @@
                                 <i class="fa fa-circle-o"></i> Settings
                             </a>
                         </li>
-                        <li class="{{ Request::is('timetable/substitution')? 'active' : '' }}">
-                            <a href="{{ route('timetable-substitution') }}">
+                    </ul>
+                </li>
+                <li class="treeview {{ Request::is('substitution/*')? 'active' : '' }}">
+                    <a href="#">
+                        <i class="fa fa-recycle"></i>
+                        <span>Substitution System</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="{{ Request::is('substitution/leave/register')? 'active' : '' }}">
+                            <a href="{{ route('substitution-leave-register') }}">
+                                <i class="fa fa-circle-o"></i> Leave Registration
+                            </a>
+                        </li>
+                        <li class="{{ Request::is('substitution/register')? 'active' : '' }}">
+                            <a href="{{ route('substitution-register') }}">
                                 <i class="fa fa-circle-o"></i> Substitution
                             </a>
                         </li>
