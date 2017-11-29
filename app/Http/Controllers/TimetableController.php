@@ -171,6 +171,7 @@ class TimetableController extends Controller
         $sessionClassRoom       = [];
         $noOfSessionPerWeek     = [];
         $classRoomSubjectCount  = [];
+        $teacherSessionCount    = [];
         $timetableArray         = [];
         $classCombinationsArr   = [];
         $settings               = Settings::where('status', 1)->first();
@@ -178,6 +179,7 @@ class TimetableController extends Controller
         $classRooms             = ClassRoom::where('status', 1)->with('standard')->get();
         $combinations           = Combination::where('status', 1)->get();
         $standards              = Standard::where('status', 1)->with('subjects')->get();
+        $teachers               = Teacher::where('status', 1)->get();
 
         if(!empty($settings) && !empty($settings->id)) {
             $noOfSessionPerDay  = $settings->session_per_day;
@@ -189,6 +191,10 @@ class TimetableController extends Controller
             foreach ($standard->subjects as $subject) {
                 $noOfSessionPerWeek[$standard->id][$subject->id] = $subject->pivot->no_of_session_per_week;
             }
+        }
+
+        foreach ($teachers as $teacher) {
+            $teacherSessionMax[$teacher->id] = $teacher->no_of_session_per_week;
         }
 
         foreach ($combinations as $comb) {
@@ -225,7 +231,7 @@ class TimetableController extends Controller
                         $randomCombinationId    = $classCombinationsArr[$classRoom->id][$randomCombinationIndex]; //print_r($randomCombinationId."<br>");
                         $combination = $combinations[$randomCombinationId-1];
 
-                        if(($combination->id == $prevcombination && $combination->id == $beforeprevcombination) || ((($session->id % $noOfSessionPerDay) == 1) && ($combination->subject->category_id) > 5)) {
+                        if(($combination->id == $prevcombination && $combination->id == $beforeprevcombination) || (((($session->id % $noOfSessionPerDay) == 1) || (($session->id % $noOfSessionPerDay) == 2)) && ($combination->subject->category_id) > 5)) {
                             continue;
                         }
 
@@ -236,28 +242,38 @@ class TimetableController extends Controller
                         if(empty($classRoomSubjectCount[$classRoomId][$subjectId])) {
                             $classRoomSubjectCount[$classRoomId][$subjectId] = 0;
                         }
+                        if(empty($teacherSessionCount[$combination->teacher_id])) {
+                            $teacherSessionCount[$combination->teacher_id] = 0;
+                        }
                         
                         if(empty($sessionTeacher[$session->id][$teacherId]) && empty($sessionClassRoom[$session->id][$classRoomId])) {
                             if($noOfSessionPerWeek[$classRoom->standard->id][$subjectId] >= $classRoomSubjectCount[$classRoomId][$subjectId]) {
-                                $sessionTeacher[$session->id][$teacherId] = $classRoomId;
-                                $sessionClassRoom[$session->id][$classRoomId] = $teacherId;
-                                $classRoomSubjectCount[$classRoomId][$subjectId] = $classRoomSubjectCount[$classRoomId][$subjectId] + 1;
+                                if($teacherSessionMax[$teacherId] >= $teacherSessionCount[$teacherId]) {
+                                    $sessionTeacher[$session->id][$teacherId] = $classRoomId;
+                                    $sessionClassRoom[$session->id][$classRoomId] = $teacherId;
+                                    $classRoomSubjectCount[$classRoomId][$subjectId] = $classRoomSubjectCount[$classRoomId][$subjectId] + 1;
+                                    $teacherSessionCount[$teacherId] = $teacherSessionCount[$teacherId] + 1;
 
-                                $timetableArray[] = [
-                                    'session_id'        => $session->id,
-                                    'combination_id'    => $combination->id,
-                                    'status'            => 1
-                                ];
-                                //considering 2 sessions as 1 for kg classes
-                                if(($classRoom->standard->level < 3) && (($session->id % 2) != 0) && empty($kgFirstCombination[$classRoom->id])) {
-                                    $kgFirstCombination[$classRoom->id] = $combination->id;
-                                    $kgFirstTeacher[$classRoom->id]     = $teacherId;
+                                    $timetableArray[] = [
+                                        'session_id'        => $session->id,
+                                        'combination_id'    => $combination->id,
+                                        'status'            => 1
+                                    ];
+                                    //considering 2 sessions as 1 for kg classes
+                                    if(($classRoom->standard->level < 3) && (($session->id % 2) != 0) && empty($kgFirstCombination[$classRoom->id])) {
+                                        $kgFirstCombination[$classRoom->id] = $combination->id;
+                                        $kgFirstTeacher[$classRoom->id]     = $teacherId;
+                                    }
+                                    //loop termination
+                                    $loopFlag   = false;
+                                    $loopCount  = 0;
+                                    $beforeprevcombination  = $prevcombination;
+                                    $prevcombination        = $combination->id;
+                                } else {
+                                    if (($key = array_search($combination->id, $classCombinationsArr[$classRoom->id])) !== false) {
+                                    unset($classCombinationsArr[$classRoom->id][$key]);
                                 }
-                                //loop termination
-                                $loopFlag   = false;
-                                $loopCount  = 0;
-                                $beforeprevcombination  = $prevcombination;
-                                $prevcombination        = $combination->id;
+                                }
                             } else {
                                 if (($key = array_search($combination->id, $classCombinationsArr[$classRoom->id])) !== false) {
                                     unset($classCombinationsArr[$classRoom->id][$key]);
