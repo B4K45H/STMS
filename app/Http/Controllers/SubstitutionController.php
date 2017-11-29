@@ -9,6 +9,7 @@ use App\Models\Teacher;
 use App\Models\Combination;
 use App\Models\Timetable;
 use App\Models\Leave;
+use App\Models\ClassRoom;
 use App\Models\Substitution;
 use App\Http\Requests\SubstitutionRegistrationRequest;
 
@@ -25,6 +26,7 @@ class SubstitutionController extends Controller
         $dayIndex               = 0;
         $leaveExcludeArr        = [];
         $engageExcludeArr       = [];
+        $substituted            = [];
         $leavetimetableSessions = [];
         $leavetimetable         = [];
         $classCombinations      = [];
@@ -35,6 +37,11 @@ class SubstitutionController extends Controller
             $dayIndex       = (date('w', $timestamp));
             //excluding leave teachers
             $leaveExcludeArr     = Leave::where('leave_date', date('Y-m-d', strtotime($substitutionDate)))->pluck('teacher_id')->toArray();
+
+            //check & confirm, a leave teacher is substituted
+            if(!in_array($teacherId, $leaveExcludeArr)) {
+                return redirect()->back()->withInput()->with("message","Selected teacher is not marked as absent for the selected date.!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+            }
 
             $leavetimetable  = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($teacherId) {
                                             $qry->where('teacher_id', $teacherId);
@@ -71,22 +78,34 @@ class SubstitutionController extends Controller
             array_push($classCombinations[$combination->classRoom->id], $combination);
         }
 
+        $substitutions  = Substitution::where('status', 1)->where('substitution_date', date('Y-m-d', strtotime($substitutionDate)))->with('combination')->get();
+        foreach ($substitutions as $key => $substitution) {
+            if(empty($engageExcludeArr[$substitution->session_id])) {
+                $engageExcludeArr[$substitution->session_id] = [];
+            }
+
+            if($substitution->leave_teacher_id == $teacherId) {
+                $substituted[$substitution->session_id] = $substitution->combination_id;
+            } else {
+                array_push($engageExcludeArr[$substitution->session_id], $substitution->combination->teacher_id);
+            }
+        }
+
         $teacherCombo   = Teacher::where('status', 1)->get();
         $settings       = Settings::where('status', 1)->first();
-        //$teachers       = Teacher::where('status', 1)->whereNotIN('id', $leaveExcludeArr)->get();
         $sessions       = Session::where('status', 1)->where('day_index', $dayIndex)->get();
 
         $noOfSession    = $settings->session_per_day;
 
-        return view('timetable.substitution', [
+        return view('substitution.substitution', [
                 'teacherId'         => $teacherId,
                 'substitutionDate'  => $substitutionDate,
                 'noOfSession'       => $noOfSession,
                 'sessions'          => $sessions,
                 'leaveTeacherName'  => $leaveTeacherName,
-                //'teachers'          => $teachers,
                 'leaveExcludeArr'   => $leaveExcludeArr,
                 'engageExcludeArr'  => $engageExcludeArr,
+                'substituted'       => $substituted,
                 'classCombinations' => $classCombinations,
                 'teacherCombo'      => $teacherCombo,
                 'timetable'         => $leavetimetable
@@ -103,9 +122,10 @@ class SubstitutionController extends Controller
         $emptyCount             = 0;
         $combinationIds         = $request->get('combination_id');
         $leaveTeacherId         = $request->get('leave_teacher_id');
-        $subDate                = $request->get('sub_date');
+        $substitutionDate       = $request->get('sub_date');
 
-        $subDate = date('Y-m-d', strtotime($subDate));
+        $subDate    = $substitutionDate;
+        $subDate    = date('Y-m-d', strtotime($subDate));
 
         if(empty(($combinationIds)) || count($combinationIds) <= 0) {
             return redirect()->back()->withInput()->with("message","Failed to save the substitution details. Minimum one substitution is required.!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
@@ -113,7 +133,7 @@ class SubstitutionController extends Controller
         foreach ($combinationIds as $sessionId => $combinationId) {
             if(!empty($combinationId)) {
                 array_push($substitutionSessions, $sessionId);
-                
+
                 $substitutionArr[] = [
                     'substitution_date' => $subDate,
                     'leave_teacher_id'  => $leaveTeacherId,
@@ -134,9 +154,75 @@ class SubstitutionController extends Controller
         
         $substitution = Substitution::insert($substitutionArr);
         if($substitution) {
-            return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
+            return redirect(route('substituted-timetable',[
+                'substitution_date'   => $substitutionDate,
+                ]))->with("message","Substitution saved successfully")->with("alert-class","alert-success");
         } else {
             return redirect()->back()->withInput()->with("message","Failed to save the substitution details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
         }
+    }
+
+    /**
+     * view for substituted timetable
+     */
+    public function substitutedTimetable(Request $request)
+    {
+        $substitutions      = [];
+        $timetable          = [];
+        $substitutionDate   = $request->get('substitution_date');
+        $teacherId          = $request->get('substitution_teacher_id');
+        $classRoomId        = $request->get('class_room_id');
+
+        $timestamp      = strtotime($substitutionDate);
+        $dayIndex       = (date('w', $timestamp));
+        
+        if(!empty($substitutionDate)) {
+            $subDate = date('Y-m-d', strtotime($substitutionDate));
+            $substitutions = Substitution::where('substitution_date', $subDate)->where('status', 1)
+                            ->with(['combination.classRoom.standard', 'combination.classRoom.division', 'combination.subject', 'combination.teacher'])->get();
+
+            $substitutions->keyBy('session_id');
+        }
+        if(!empty($teacherId) && !empty($substitutionDate)) {
+            $timetable  = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($teacherId) {
+                            $qry->where('teacher_id', $teacherId);
+                        })->whereHas('session', function ($qry) use($dayIndex) {
+                            $qry->where('day_index', $dayIndex);
+                        })->with(['combination.classRoom.standard', 'combination.classRoom.division', 'combination.subject'])->get();
+        } elseif(!empty($classRoomId) && !empty($substitutionDate)) {
+            $timetable  = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($classRoomId) {
+                            $qry->where('class_room_id', $classRoomId);
+                        })->whereHas('session', function ($qry) use($dayIndex) {
+                            $qry->where('day_index', $dayIndex);
+                        })->with(['combination.classRoom.standard', 'combination.classRoom.division', 'combination.subject'])->get();
+        }
+
+        
+        $teacherCombo   = Teacher::where('status', 1)->get();
+        $classRooms     = ClassRoom::where('status', 1)->with(['standard', 'division'])->get();
+        $settings       = Settings::where('status', 1)->first();
+        $sessions       = Session::where('status', 1)->where('day_index', $dayIndex)->get();
+
+        if(!empty($teacherId)) {
+            $selectedTeacher    = Teacher::find($teacherId);
+            $teacherName   = $selectedTeacher->teacher_name;
+        } else {
+            $teacherName = "";
+        }
+
+        $noOfSession    = $settings->session_per_day;
+
+        return view('substitution.substituted-timetable',[
+                'teacherName'       => $teacherName,
+                'classRooms'        => $classRooms,
+                'teacherId'         => $teacherId,
+                'classRoomId'       => $classRoomId,
+                'teacherCombo'      => $teacherCombo,
+                'timetable'         => $timetable,
+                'substitutionDate'  => $substitutionDate,
+                'substitutions'     => $substitutions,
+                'noOfSession'       => $noOfSession,
+                'sessions'          => $sessions
+                ]);
     }
 }

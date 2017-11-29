@@ -29,6 +29,8 @@ Route::group(['middleware' => 'auth.check'], function () {
     Route::get('/my/profile', 'UserController@profileView')->name('user-profile');
     Route::get('/lockscreen', 'LoginController@lockscreen')->name('lockscreen');
     Route::get('/logout', 'LoginController@logout')->name('logout-action');
+    Route::get('/error/404', 'LoginController@invalidUrl')->name('invalid-url');
+    Route::get('/error/500', 'LoginController@serverError')->name('server-error');
 
     //superadmin routes
     Route::group(['middleware' => ['user.role:0,,']], function () {
@@ -70,5 +72,6 @@ Route::group(['middleware' => 'auth.check'], function () {
         //substitution
         Route::get('/substitution/register', 'SubstitutionController@substitution')->name('substitution-register');
         Route::post('/substitution/register/action', 'SubstitutionController@substitutionAction')->name('substitution-register-action');
+        Route::get('/substitution/temp/timetable', 'SubstitutionController@substitutedTimetable')->name('substituted-timetable');
     });
 });

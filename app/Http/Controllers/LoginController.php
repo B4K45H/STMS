@@ -36,6 +36,30 @@ class LoginController extends Controller
     }
 
     /**
+     * Return view for invalid url error
+     */
+    public function invalidUrl()
+    {
+        if(Auth::check()) {
+            return view('errors.404-error');
+        } else {
+            return redirect(route('login'));
+        }
+    }
+
+    /**
+     * Return view for public home page
+     */
+    public function serverError()
+    {
+        if(Auth::check()) {
+            return view('errors.500-error');
+        } else {
+            return redirect(route('login'));
+        }
+    }
+
+    /**
      * Handle an authentication attempt.
      */
     public function loginAction(Request $request)

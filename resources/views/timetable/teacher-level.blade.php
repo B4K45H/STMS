@@ -99,15 +99,13 @@
                                                 <tr>
                                                     <td><div style="height: 50px; overflow:auto;"><b>{{ $session->day_name }}</b></div></td>
                                             @endif
-                                            @foreach($timetable as $record)
-                                                @if($session->id == $record->session_id)
-                                                <?php $flag[$session->id] = 1; ?>
-                                                    <td><b>{{ $record->combination->classRoom->standard->standard_name }}-{{ $record->combination->classRoom->division->division_name }}</b> / {{ $record->combination->subject->subject_name }}</td>
-                                                @endif
-                                            @endforeach
-                                            @if(empty($flag[$session->id]))
-                                                <td></td>
-                                            @endif
+                                            <td>
+                                                @foreach($timetable as $record)
+                                                    @if($session->id == $record->session_id)
+                                                        <b>{{ $record->combination->classRoom->standard->standard_name }}-{{ $record->combination->classRoom->division->division_name }}</b> / {{ $record->combination->subject->subject_name }}{{-- </td> --}}
+                                                    @endif
+                                                @endforeach
+                                            </td>
                                             @if( (($index +1)%$noOfSession) == 0 )
                                                 </tr>
                                             @endif

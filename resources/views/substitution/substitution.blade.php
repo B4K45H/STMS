@@ -43,6 +43,13 @@
                                 <div class="col-md-10">
                                     <div class="form-group">
                                         <div class="col-sm-6">
+                                            <label for="sub_date" class="control-label">Date : </label>
+                                            <input type="text" name="sub_date" class="form-control datepicker" placeholder="select date." value="{{ !empty($substitutionDate) ? $substitutionDate : '' }}" id="datepicker2" tabindex="7">
+                                            @if(!empty($errors->first('sub_date')))
+                                                <p style="color: red;" >{{$errors->first('sub_date')}}</p>
+                                            @endif
+                                        </div>
+                                        <div class="col-sm-6">
                                             <label for="leave_teacher_id" class="control-label">Teacher Name : </label>
                                             <select class="form-control" name="leave_teacher_id" id="leave_teacher_id" tabindex="3" style="width: 100%">
                                                 <option value="">Select teacher</option>
@@ -54,13 +61,6 @@
                                             </select>
                                             @if(!empty($errors->first('leave_teacher_id')))
                                                 <p style="color: red;" >{{$errors->first('leave_teacher_id')}}</p>
-                                            @endif
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <label for="sub_date" class="control-label">Date : </label>
-                                            <input type="text" name="sub_date" class="form-control datepicker" placeholder="select date." value="{{ !empty($substitutionDate) ? $substitutionDate : '' }}" id="datepicker2" tabindex="7">
-                                            @if(!empty($errors->first('sub_date')))
-                                                <p style="color: red;" >{{$errors->first('sub_date')}}</p>
                                             @endif
                                         </div>
                                     </div>
@@ -126,7 +126,7 @@
                                                                     @if(!empty($classCombinations[$record->combination->class_room_id]) && (count($classCombinations[$record->combination->class_room_id]) > 0))
                                                                         @foreach($classCombinations[$record->combination->class_room_id] as $comb)
                                                                             @if(!in_array($comb->teacher_id, $engageExcludeArr[$record->session_id]) && !in_array($comb->teacher_id, $leaveExcludeArr))
-                                                                                <option value="{{ $comb->id }}" {{ ((old('combination_id['. $record->session_id. ']') == $comb->id )) ? 'selected' : '' }}>{{ $comb->teacher->teacher_name }} - {{ $comb->subject->subject_name }}</option>
+                                                                                <option value="{{ $comb->id }}" {{ (!empty($substituted[$record->session_id]) && $substituted[$record->session_id] == $comb->id) ? 'selected disabled' : '' }}>{{ $comb->teacher->teacher_name }} - {{ $comb->subject->subject_name }}</option>
                                                                             @endif
                                                                         @endforeach
                                                                     @endif
@@ -148,7 +148,7 @@
                                     <div class="row">
                                         <div class="col-xs-5"></div>
                                         <div class="col-xs-2">
-                                            <button type="submit" class="btn btn-primary btn-block btn-flat" tabindex="7">Submit</button>
+                                            <button type="submit" class="btn btn-primary btn-block btn-flat" tabindex="7" {{ (empty($teacherId) || empty($substitutionDate)) ? "disabled" : "" }}>Submit</button>
                                         </div>
                                         <!-- /.col -->
                                     </div><br>

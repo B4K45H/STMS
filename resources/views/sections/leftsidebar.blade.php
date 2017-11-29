@@ -89,6 +89,11 @@
                                 <i class="fa fa-circle-o"></i> Substitution
                             </a>
                         </li>
+                        <li class="{{ Request::is('substitution/temp/timetable')? 'active' : '' }}">
+                            <a href="{{ route('substituted-timetable') }}">
+                                <i class="fa fa-circle-o"></i> Substituted Timetable
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <li class="treeview {{ Request::is('subject/*')? 'active' : '' }}">

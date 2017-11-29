@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Substitution')
+@section('title', 'Leave Registration')
 @section('content')
 <div class="content-wrapper">
      <section class="content-header">
@@ -87,7 +87,7 @@
             <div class="col-md-8">
                 <div class="box">
                     <div class="box-header with-border">
-                        <h3 class="box-title">Last 10 leave Records</h3>
+                        <h3 class="box-title">Upcoming Leave Records</h3>
                     </div>
                     <div class="box-body">
                         @if(!empty($leaves))
