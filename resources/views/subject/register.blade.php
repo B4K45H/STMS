@@ -57,7 +57,7 @@
                                     <div class="form-group">
                                         <label for="subject_category_id" class="col-sm-2 control-label"><b style="color: red;">* </b>Subject Category : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('subject_category_id')) ? 'has-error' : '' }}">
-                                            <select class="form-control" name="subject_category_id" id="subject_category_id" tabindex="2">
+                                            <select class="form-control select_2" name="subject_category_id" id="subject_category_id" tabindex="2">
                                                 <option value="" {{ empty(old('subject_category_id')) ? 'selected' : '' }}>Select subject category</option>
                                                 <option value="1" {{ old('subject_category_id')==1 ? 'selected' : '' }}>Language</option>
                                                 <option value="2" {{ old('subject_category_id')==2 ? 'selected' : '' }}>Science</option>

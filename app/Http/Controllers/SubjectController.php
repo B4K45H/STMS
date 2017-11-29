@@ -61,7 +61,7 @@ class SubjectController extends Controller
     /**
      * Return view for product listing
      */
-    public function list()
+    public function subjectList()
     {
         $subjects = Subject::where('status', 1)->with('standards')->paginate(15);
         if(empty($subjects) || count($subjects) == 0) {

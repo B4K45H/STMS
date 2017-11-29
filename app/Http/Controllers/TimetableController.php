@@ -179,7 +179,11 @@ class TimetableController extends Controller
         $combinations           = Combination::where('status', 1)->get();
         $standards              = Standard::where('status', 1)->with('subjects')->get();
 
-        $noOfSessionPerDay  = $settings->session_per_day;
+        if(!empty($settings) && !empty($settings->id)) {
+            $noOfSessionPerDay  = $settings->session_per_day;
+        } else {
+            $noOfSessionPerDay  = 0;
+        }
 
         foreach ($standards as $standard) {
             foreach ($standard->subjects as $subject) {

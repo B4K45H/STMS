@@ -27,6 +27,8 @@ Route::group(['middleware' => 'auth.check'], function () {
     //common routes
     Route::get('/dashboard', 'LoginController@dashboard')->name('dashboard');
     Route::get('/my/profile', 'UserController@profileView')->name('user-profile');
+    Route::get('/my/profile/edit', 'UserController@editProfile')->name('profile-edit');
+    Route::post('/my/profile/update/action', 'UserController@updateProfile')->name('profile-update-action');
     Route::get('/lockscreen', 'LoginController@lockscreen')->name('lockscreen');
     Route::get('/logout', 'LoginController@logout')->name('logout-action');
     Route::get('/error/404', 'LoginController@invalidUrl')->name('invalid-url');
@@ -44,17 +46,17 @@ Route::group(['middleware' => 'auth.check'], function () {
         //subject
         Route::get('/subject/register', 'SubjectController@register')->name('subject-register');
         Route::post('/subject/register/action', 'SubjectController@registerAction')->name('subject-register-action');
-        Route::get('/subject/list', 'SubjectController@list')->name('subject-list');
+        Route::get('/subject/list', 'SubjectController@subjectList')->name('subject-list');
 
         //teacher
         Route::get('/teacher/register', 'TeacherController@register')->name('teacher-register');
         Route::post('/teacher/register/action', 'TeacherController@registerAction')->name('teacher-register-action');
-        Route::get('/teacher/list', 'TeacherController@list')->name('teacher-list');
+        Route::get('/teacher/list', 'TeacherController@teacherList')->name('teacher-list');
 
         //class
         Route::get('/classroom/register', 'ClassRoomController@register')->name('class-room-register');
         Route::post('/classroom/register/action', 'ClassRoomController@registerAction')->name('class-room-register-action');
-        Route::get('/classroom/list', 'ClassRoomController@list')->name('class-room-list');
+        Route::get('/classroom/list', 'ClassRoomController@classRoomList')->name('class-room-list');
         Route::get('/classroom/combinationList/{id}', 'ClassRoomController@combinationList')->name('class-room-combination-list');
         Route::get('/get/subjects/standard/{id}', 'ClassRoomController@getSubjectsByStandard')->name('get-subjects-by-standard');
 

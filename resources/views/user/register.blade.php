@@ -63,7 +63,7 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <div class="form-group">
+                                        {{-- <div class="form-group">
                                             <label for="phone" class="col-sm-2 control-label"><b style="color: red;">* </b> Phone : </label>
                                             <div class="col-sm-10 {{ !empty($errors->first('phone')) ? 'has-error' : '' }}">
                                                 <input type="text" name="phone" class="form-control number_only" placeholder="Phone Number" value="{{ old('phone') }}"  tabindex="4">
@@ -71,7 +71,7 @@
                                                     <p style="color: red;" >{{$errors->first('phone')}}</p>
                                                 @endif
                                             </div>
-                                        </div>
+                                        </div> --}}
                                         <div class="form-group">
                                             <label for="image_file" class="col-sm-2 control-label">Image : </label>
                                             <div class="col-sm-10 {{ !empty($errors->first('image_file')) ? 'has-error' : '' }}">
@@ -84,7 +84,7 @@
                                         <div class="form-group">
                                             <label for="role" class="col-sm-2 control-label"><b style="color: red;">* </b> User Role : </label>
                                             <div class="col-sm-10 {{ !empty($errors->first('role')) ? 'has-error' : '' }}">
-                                                <select class="form-control" name="role" id="role"  tabindex="6">
+                                                <select class="form-control select_2" name="role" id="role"  tabindex="6">
                                                     <option value="" {{ empty(old('role')) ? 'selected' : '' }}>Select User Role</option>
                                                     <option value="0" {{ old('role') == 'superadmin' ? 'selected' : '' }}>Super Admin</option>
                                                     <option value="1" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>

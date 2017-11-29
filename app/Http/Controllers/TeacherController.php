@@ -44,7 +44,7 @@ class TeacherController extends Controller
     /**
      * Return view for product listing
      */
-    public function list()
+    public function teacherList()
     {
         $teachers = Teacher::where('status', 1)->paginate(15);
         if(empty($teachers) || count($teachers) == 0) {

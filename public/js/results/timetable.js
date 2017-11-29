@@ -13,40 +13,32 @@ $(function () {
     });
 
     //Initialize Select2 Element for teacher select box
-    $("#teacher_id").select2({
+    $(".select_2").select2({
         minimumResultsForSearch: 5
-    });
-
-    //Initialize Select2 Element for teacher select box
-    $(".teacher_select").select2({
-        minimumResultsForSearch: 5
-    });
-    
-    //Initialize Select2 Element for teacher select box
-    $("#leave_teacher_id").select2({
-        minimumResultsForSearch: 5
-    });
-
-    $("#class_room_id").select2({
-        minimumResultsForSearch: 5
-    });
-
-    $("#no_of_days").select2({
-        minimumResultsForSearch: 5
-    });
-
-    $("#no_of_session").select2({
-        minimumResultsForSearch: 10
-    });
-
-    $("#day_index").select2({
-        minimumResultsForSearch: 10
     });
     
     //invoke modal for confirmation
     $('body').on("click", "#timetable_generate_btn", function (e) {
         e.preventDefault();
         $('#confirm_modal').modal('show');
+    });
+
+    //clear classroom selection on teacher selection
+    $('body').on("change", "#substitution_teacher_id", function () {
+        var teacherId = $('#substitution_teacher_id').val();
+        if(teacherId) {
+            $('#class_room_id').val('');
+            $('#class_room_id').trigger('change');
+        }
+    });
+
+    //clear teacher selection on classroom selection
+    $('body').on("change", "#class_room_id", function () {
+        var classroomId = $('#class_room_id').val();
+        if(classroomId) {
+            $('#substitution_teacher_id').val('');
+            $('#substitution_teacher_id').trigger('change');
+        }
     });
 
     //invoke modal for confirmation

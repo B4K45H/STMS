@@ -2,23 +2,13 @@ $(function () {
     //hide flash messages
     dismissAlert();
 
-    $('body').on("change", "#financial_status", function () {
-        financialStatus = this.value;
-        if(financialStatus == 'none') {
-            $('#opening_balance').val('0');
-            $('#opening_balance').prop("readonly",true);
-        } else {
-            $('#opening_balance').val('');
-            $('#opening_balance').prop("readonly",false);
-        }
+    //Initialize Select2 Element for standard select box
+    $(".select_2").select2({
+        minimumResultsForSearch: 5
     });
 
     $('body').on("keydown", ".prevent-edit", function (evt) {
         return false;
-    });
-
-    $('body').on("click", "#print_invoice", function (evt) {
-        window.print();
     });
     
     // for checking if the pressed key is a number
@@ -85,17 +75,6 @@ $(function () {
     $('body').on("click", ".submit-button", function () {
         $('.submit-button').prop('disabled', true);
         $(this).parents('form:first').submit();
-    });
-
-    // for disabling submit button to prevent multiple submition on updation confirmation modal
-    $('body').on("click", "#update_confirmation_modal_confirm", function () {
-        $('#update_confirmation_modal_confirm').prop('disabled', true);
-        $(".update-button").parents('form:first').submit();
-    });
-
-    //invoke confirmation on update
-    $('body').on("click", ".update-button", function () {
-        $('#update_confirmation_modal').modal('show');
     });
 });
 function dismissAlert() {

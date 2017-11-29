@@ -51,7 +51,7 @@
                                         </div>
                                         <div class="col-sm-6">
                                             <label for="leave_teacher_id" class="control-label">Teacher Name : </label>
-                                            <select class="form-control" name="leave_teacher_id" id="leave_teacher_id" tabindex="3" style="width: 100%">
+                                            <select class="form-control select_2" name="leave_teacher_id" id="leave_teacher_id" tabindex="3" style="width: 100%">
                                                 <option value="">Select teacher</option>
                                                 @if(!empty($teacherCombo) && (count($teacherCombo) > 0))
                                                     @foreach($teacherCombo as $teacher)
@@ -121,7 +121,7 @@
                                                             </div>
                                                             <div class="form-group">
                                                                 <input type="hidden" name="session_id[]" value="{{ $record->session_id }}">
-                                                                <select class="form-control teacher_select" name="combination_id[{{ $record->session_id }}]" tabindex="3" style="width: 100%">
+                                                                <select class="form-control select_2" name="combination_id[{{ $record->session_id }}]" tabindex="3" style="width: 100%">
                                                                     <option value="">Select teacher</option>
                                                                     @if(!empty($classCombinations[$record->combination->class_room_id]) && (count($classCombinations[$record->combination->class_room_id]) > 0))
                                                                         @foreach($classCombinations[$record->combination->class_room_id] as $comb)

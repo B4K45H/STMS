@@ -95,12 +95,16 @@ class SubstitutionController extends Controller
         $settings       = Settings::where('status', 1)->first();
         $sessions       = Session::where('status', 1)->where('day_index', $dayIndex)->get();
 
-        $noOfSession    = $settings->session_per_day;
+        if(!empty($settings) && !empty($settings->id)) {
+            $noOfSessionPerDay  = $settings->session_per_day;
+        } else {
+            $noOfSessionPerDay  = 0;
+        }
 
         return view('substitution.substitution', [
                 'teacherId'         => $teacherId,
                 'substitutionDate'  => $substitutionDate,
-                'noOfSession'       => $noOfSession,
+                'noOfSession'       => $noOfSessionPerDay,
                 'sessions'          => $sessions,
                 'leaveTeacherName'  => $leaveTeacherName,
                 'leaveExcludeArr'   => $leaveExcludeArr,
@@ -169,6 +173,8 @@ class SubstitutionController extends Controller
     {
         $substitutions      = [];
         $timetable          = [];
+        $teacherName        = "";
+        $classRoomName      = "";
         $substitutionDate   = $request->get('substitution_date');
         $teacherId          = $request->get('substitution_teacher_id');
         $classRoomId        = $request->get('class_room_id');
@@ -189,12 +195,20 @@ class SubstitutionController extends Controller
                         })->whereHas('session', function ($qry) use($dayIndex) {
                             $qry->where('day_index', $dayIndex);
                         })->with(['combination.classRoom.standard', 'combination.classRoom.division', 'combination.subject'])->get();
+
+            $selectedTeacher    = Teacher::find($teacherId);
+            $teacherName    = $selectedTeacher->teacher_name;
+            $classRoomName  = "";
         } elseif(!empty($classRoomId) && !empty($substitutionDate)) {
             $timetable  = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($classRoomId) {
                             $qry->where('class_room_id', $classRoomId);
                         })->whereHas('session', function ($qry) use($dayIndex) {
                             $qry->where('day_index', $dayIndex);
                         })->with(['combination.classRoom.standard', 'combination.classRoom.division', 'combination.subject'])->get();
+            
+            $selectedclassRoom  = ClassRoom::find($classRoomId);
+            $classRoomName      = $selectedclassRoom->standard->standard_name;
+            $teacherName        = "";
         }
 
         
@@ -203,17 +217,15 @@ class SubstitutionController extends Controller
         $settings       = Settings::where('status', 1)->first();
         $sessions       = Session::where('status', 1)->where('day_index', $dayIndex)->get();
 
-        if(!empty($teacherId)) {
-            $selectedTeacher    = Teacher::find($teacherId);
-            $teacherName   = $selectedTeacher->teacher_name;
+        if(!empty($settings) && !empty($settings->id)) {
+            $noOfSessionPerDay  = $settings->session_per_day;
         } else {
-            $teacherName = "";
+            $noOfSessionPerDay  = 0;
         }
-
-        $noOfSession    = $settings->session_per_day;
 
         return view('substitution.substituted-timetable',[
                 'teacherName'       => $teacherName,
+                'classRoomName'     => $classRoomName,
                 'classRooms'        => $classRooms,
                 'teacherId'         => $teacherId,
                 'classRoomId'       => $classRoomId,
@@ -221,7 +233,7 @@ class SubstitutionController extends Controller
                 'timetable'         => $timetable,
                 'substitutionDate'  => $substitutionDate,
                 'substitutions'     => $substitutions,
-                'noOfSession'       => $noOfSession,
+                'noOfSession'       => $noOfSessionPerDay,
                 'sessions'          => $sessions
                 ]);
     }

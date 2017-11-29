@@ -1,29 +1,4 @@
 $(function () {
-    //new teacher registration link for select2
-    teacherRegistrationLink = "No results found. <a href='/teacher/register'>Register new teacher</a>";
-    
-    //Initialize Select2 Element for standard select box
-    $("#standard_id").select2({
-        minimumResultsForSearch: 5
-    });
-
-    //Initialize Select2 Element for standard select box
-    $("#division_id").select2({
-        minimumResultsForSearch: 5
-    });
-
-    //Initialize Select2 Element for teacher incharge select box
-    $("#teacher_incharge_id").select2({
-        language: {
-             noResults: function() {
-                return teacherRegistrationLink;
-            }
-        },
-        escapeMarkup: function (markup) {
-            return markup;
-        }
-    });
-
     //select subjects and teachers for selected standard
     $('body').on("change", "#standard_id", function () {
         var html = "";
@@ -51,7 +26,7 @@ $(function () {
                                                 '</td>'+
                                             '<td>'+
                                                 '<div class="col-lg-12">'+
-                                                    '<select class="form-control" name="teacher_id['+ (subject.id) +']" id="teacher_id" tabindex="5">'+
+                                                    '<select class="form-control select_2" name="teacher_id['+ (subject.id) +']" id="teacher_id" tabindex="5">'+
                                                         '<option value="">Select teacher</option>'+
                                                             teachersSelectOptions+
                                                     '</select>'+
@@ -68,6 +43,9 @@ $(function () {
                     } else {
                         $("#subject_teacher_assignment_container").html('');
                     }
+                    $('.select_2').select2({
+                        minimumResultsForSearch: 5
+                    });
                 },
                 error: function () {
                     $("#subject_teacher_assignment_container").html('');

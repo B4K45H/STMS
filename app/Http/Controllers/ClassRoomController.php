@@ -97,7 +97,7 @@ class ClassRoomController extends Controller
     /**
      * Return view for product listing
      */
-    public function list()
+    public function classRoomList()
     {
         $classRooms = ClassRoom::where('status', 1)->paginate(15);
         if(empty($classRooms) || count($classRooms) == 0) {

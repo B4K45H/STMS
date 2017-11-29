@@ -30,12 +30,12 @@
                     </a>
                     <ul class="treeview-menu">
                         <li class="{{ Request::is('user/register')? 'active' : '' }}">
-                            <a href="#">
+                            <a href="{{ route('user-register') }}">
                                 <i class="fa fa-circle-o"></i> Registration
                             </a>
                         </li>
                         <li class="{{ Request::is('user/list')? 'active' : '' }}">
-                            <a href="#">
+                            <a href="{{ route('user-list') }}">
                                 <i class="fa fa-circle-o"></i> List
                             </a>
                         </li>   

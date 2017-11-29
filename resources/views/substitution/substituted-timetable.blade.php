@@ -42,7 +42,7 @@
                                         </div>
                                         <div class="col-sm-4">
                                             <label for="substitution_teacher_id" class="control-label">Teacher Name : </label>
-                                            <select class="form-control" name="substitution_teacher_id" id="substitution_teacher_id" tabindex="3" style="width: 100%">
+                                            <select class="form-control select_2" name="substitution_teacher_id" id="substitution_teacher_id" tabindex="3" style="width: 100%">
                                                 <option value="">Select teacher</option>
                                                 @if(!empty($teacherCombo) && (count($teacherCombo) > 0))
                                                     @foreach($teacherCombo as $teacher)
@@ -56,7 +56,7 @@
                                         </div>
                                         <div class="col-sm-4">
                                             <label for="class_room_id" class="control-label">Class : </label>
-                                            <select class="form-control" name="class_room_id" id="class_room_id" tabindex="3" style="width: 100%">
+                                            <select class="form-control select_2" name="class_room_id" id="class_room_id" tabindex="3" style="width: 100%">
                                                 <option value="">Select class room</option>
                                                 @if(!empty($classRooms) && (count($classRooms) > 0))
                                                     @foreach($classRooms as $classRoom)
@@ -92,7 +92,7 @@
             <div class="col-md-12">
                 <div class="box">
                     <div class="box-header">
-                        <h3 class="box-title"><b>{{ !empty($teacherName) ? ("Temporary timetable for : ". $teacherName) : "Substitutions " }}</b> &emsp;&emsp;on Date : <b>{{ !empty($substitutionDate) ? $substitutionDate : "" }}</b></h3>
+                        <h3 class="box-title"><b>{{ (empty($teacherName) && empty($classRoomName)) ? "Substitutions" : ("Temporary timetable for : ". (!empty($teacherName) ? $teacherName : $classRoomName )) }}</b> &emsp;&emsp; Date : <b>{{ !empty($substitutionDate) ? $substitutionDate : "" }}</b></h3>
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body">
@@ -127,10 +127,10 @@
                                                                     </u>
                                                                 @endif
                                                             @else
-                                                                <b>{{ $substitution->combination->teacher->teacher_name }}</b> [
+                                                                <u style="color: red;"><b>{{ $substitution->combination->teacher->teacher_name }}</b> [
                                                                 {{ $substitution->combination->classRoom->standard->standard_name }}
                                                                 {{ $substitution->combination->classRoom->division->division_name }} /
-                                                                {{ $substitution->combination->subject->subject_name }} ]<br>
+                                                                {{ $substitution->combination->subject->subject_name }} ]</u><br>
                                                             @endif
                                                         @endif
                                                     @endforeach

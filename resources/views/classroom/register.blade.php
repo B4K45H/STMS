@@ -74,7 +74,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label"><b style="color: red;">* </b>Standard : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('standard_id')) ? 'has-error' : '' }}">
-                                            <select class="form-control" name="standard_id" id="standard_id" tabindex="2">
+                                            <select class="form-control select_2" name="standard_id" id="standard_id" tabindex="2">
                                                 <option value="" selected>Select standard</option>
                                                 @if(!empty($standards))
                                                     @foreach($standards as $standard)
@@ -93,7 +93,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label"><b style="color: red;">* </b>Division : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('division_id')) ? 'has-error' : '' }}">
-                                            <select class="form-control" name="division_id" id="division_id" tabindex="3">
+                                            <select class="form-control select_2" name="division_id" id="division_id" tabindex="3">
                                                 <option value="" {{ empty(old('division_id')) ? 'selected' : '' }}>Select division</option>
                                                 @if(!empty($divisions))
                                                     @foreach($divisions as $division)
@@ -118,7 +118,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label"><b style="color: red;">* </b>Incharge : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('teacher_incharge_id')) ? 'has-error' : '' }}">
-                                            <select class="form-control" name="teacher_incharge_id" id="teacher_incharge_id" tabindex="5">
+                                            <select class="form-control select_2" name="teacher_incharge_id" id="teacher_incharge_id" tabindex="5">
                                                 <option value="" {{ empty(old('teacher_incharge_id')) ? 'selected' : '' }}>Select incharge</option>
                                                 @if(!empty($teachers))
                                                     @foreach($teachers as $teacher)
@@ -160,7 +160,7 @@
                                                                 </td>
                                                                 <td>
                                                                     <div class="col-lg-12">
-                                                                        <select class="form-control" name="teacher_id[{{ $subject->id }}]" id="teacher_id" tabindex="5" disabled>
+                                                                        <select class="form-control select_2" name="teacher_id[{{ $subject->id }}]" id="teacher_id" tabindex="5" disabled>
                                                                             <option value="" {{ empty(old('teacher_id')) ? 'selected' : '' }}>Select teacher</option>
                                                                         </select>
                                                                     </div>

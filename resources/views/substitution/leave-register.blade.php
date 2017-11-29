@@ -40,7 +40,7 @@
                                     <div class="form-group">
                                         <label for="teacher_id" class="col-sm-2 control-label"><b style="color: red;">* </b> Teacher Name : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('teacher_id')) ? 'has-error' : '' }}">
-                                            <select class="form-control" name="teacher_id" id="teacher_id" tabindex="3" style="width: 100%">
+                                            <select class="form-control select_2" name="teacher_id" id="teacher_id" tabindex="3" style="width: 100%">
                                                 <option value="">Select teacher</option>
                                                 @if(!empty($teachers) && (count($teachers) > 0))
                                                     @foreach($teachers as $teacher)

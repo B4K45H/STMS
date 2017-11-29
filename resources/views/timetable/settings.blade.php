@@ -58,7 +58,7 @@
                                     <div class="form-group">
                                         <label for="name" class="col-sm-3 control-label"><b style="color: red;">* </b> Working Days In A Week : </label>
                                         <div class="col-sm-9 {{ !empty($errors->first('no_of_days')) ? 'has-error' : '' }}">
-                                            <select class="form-control" name="no_of_days" id="no_of_days" tabindex="1" style="width: 100%">
+                                            <select class="form-control select_2" name="no_of_days" id="no_of_days" tabindex="1" style="width: 100%">
                                                 <option value="" {{ (empty(old('no_of_days')) || empty($noOfDays)) ? 'selected' : '' }}>Select working days in a week</option>
                                                 <option value="5" {{ (old('no_of_days')==1 || $noOfDays == 5) ? 'selected' : '' }}>Monday to Friday - 5 Days</option>
                                                 <option value="6" {{ (old('no_of_days')==2 || $noOfDays == 6) ? 'selected' : '' }}>Monday to Saturday - 6 days</option>
@@ -71,7 +71,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-3 control-label"><b style="color: red;">* </b>No Of Sessions In A Day : </label>
                                         <div class="col-sm-9 {{ !empty($errors->first('no_of_session')) ? 'has-error' : '' }}">
-                                            <select class="form-control" name="no_of_session" id="no_of_session" tabindex="2" style="width: 100%">
+                                            <select class="form-control select_2" name="no_of_session" id="no_of_session" tabindex="2" style="width: 100%">
                                                 <option value="" {{ (empty(old('no_of_session')) || empty($noOfSession)) ? 'selected' : '' }}>Select no of sessions in a day</option>
                                                 <option value="5" {{ (old('no_of_session')==5 || $noOfSession == 5) ? 'selected' : '' }}>5 Sessions</option>
                                                 <option value="6" {{ (old('no_of_session')==6 || $noOfSession == 6) ? 'selected' : '' }}>6 Sessions</option>
@@ -129,7 +129,7 @@
                                     <br><br>
                                     <div class="col-xs-4"></div>
                                     <div class="col-xs-4">
-                                        <button type="button" class="btn btn-primary btn-block btn-flat" id="timetable_generate_btn" tabindex="5">Generate Timetable</button>
+                                        <button type="button" class="btn btn-primary btn-block btn-flat" id="timetable_generate_btn" tabindex="5" {{ empty($noOfSession) || empty($noOfDays) ? "disabled" : "" }}>Generate Timetable</button>
                                     </div>
                                     <!-- /.col -->
                                 </div><br>

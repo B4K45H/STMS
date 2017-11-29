@@ -53,10 +53,10 @@
                                                 <b class="">E-mail : </b>
                                                 <a class="pull-right">{{ !empty($currentUser->email) ? $currentUser->email : '    Nil' }}</a>
                                             </li>
-                                            <li class="list-group-item">
+                                            {{-- <li class="list-group-item">
                                                 <b class="">Phone : </b>
                                                 <a class="pull-right">{{ !empty($currentUser->phone) ? $currentUser->phone : 'Nil' }}</a>
-                                            </li>
+                                            </li> --}}
                                             <li class="list-group-item">
                                                 <b class="">Role : </b>
                                                 <a class="pull-right">{{ !empty($currentUser->role) ? ($currentUser->role == 2? 'Employee' : 'Admin') : 'Nil' }}</a>
@@ -72,7 +72,7 @@
                                         </div>
                                         <div class="col-md-2"></div>
                                         <div class="col-md-3  no-print">
-                                            <a href="{{ route('under-construction') }}" class="btn btn-primary btn-block"><b>Edit Profile</b></a>
+                                            <a href="{{ route('profile-edit') }}" class="btn btn-primary btn-block"><b>Edit Profile</b></a>
                                         </div>
                                         <div class="clearfix"></div><br>
                                     </div>

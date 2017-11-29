@@ -37,9 +37,8 @@
                                         <tr>
                                             <th>Name</th>
                                             <th>User Name</th>
-                                            <th>Phone</th>
                                             <th>Role</th>
-                                            <th>Valid Till</th>
+                                            <th>Validity</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -48,8 +47,7 @@
                                                 <tr class="{{ $user->role == 'admin' ? 'bg-success' : ($user->role == 'user' ? 'bg-info' : 'bg-warning') }}">
                                                     <td>{{ $user->name }}</td>
                                                     <td>{{ $user->user_name }}</td>
-                                                    <td>{{ $user->phone }}</td>
-                                                    <td>{{ $user->role }}</td>
+                                                    <td>{{ $user->role == 0 ? "Super Admin" : ($user->role == 1 ? "Admin" : "User") }}</td>
                                                     @if(!empty($user->valid_till))
                                                         <td>{{ $user->valid_till }}</td>
                                                     @else

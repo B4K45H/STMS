@@ -35,7 +35,7 @@
                                     <div class="form-group">
                                         <div class="col-sm-12 {{ !empty($errors->first('class_room_id')) ? 'has-error' : '' }}">
                                             <label for="class_room_id" class="control-label">Class : </label>
-                                            <select class="form-control" name="class_room_id" id="class_room_id" tabindex="3" style="width: 100%">
+                                            <select class="form-control select_2" name="class_room_id" id="class_room_id" tabindex="3" style="width: 100%">
                                                 <option value="">Select class</option>
                                                 @if(!empty($classRooms) && (count($classRooms) > 0))
                                                     @foreach($classRooms as $classRoom)
