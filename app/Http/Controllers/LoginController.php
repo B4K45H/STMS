@@ -67,7 +67,7 @@ class LoginController extends Controller
         $userName = $request->get('user_name');
         $password = $request->get('password');
          
-         if(Auth::attempt(['user_name' => $userName, 'password' => $password, 'status' => '1'],false)) {
+         if(Auth::attempt(['user_name' => $userName, 'password' => $password, 'status' => '1'],true)) {
             // Authentication passed...
             $user   = Auth::user();
             $today  = strtotime('now');

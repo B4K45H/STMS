@@ -156,6 +156,10 @@ class TimetableController extends Controller
      */
     public function generateTimetableAction()
     {
+        //2 sessions are considering as one for the standards whose standard level are leass than or equal to the variable value[for now level 2]
+        $doubleSessionLevel = 2;
+        //subject categoy value to avoid in session 1 and 2 of the day
+        $subjectCategoryLevel = 5;
         // Get default request execution limit
         $normalTimeLimit = ini_get('max_execution_time');
 
@@ -174,6 +178,7 @@ class TimetableController extends Controller
         $teacherSessionCount    = [];
         $timetableArray         = [];
         $classCombinationsArr   = [];
+
         $settings               = Settings::where('status', 1)->first();
         $sessions               = Session::where('status', 1)->get();
         $classRooms             = ClassRoom::where('status', 1)->with('standard')->get();
@@ -187,16 +192,19 @@ class TimetableController extends Controller
             $noOfSessionPerDay  = 0;
         }
 
+        //maximum number of sessions of a subject in a class/week
         foreach ($standards as $standard) {
             foreach ($standard->subjects as $subject) {
                 $noOfSessionPerWeek[$standard->id][$subject->id] = $subject->pivot->no_of_session_per_week;
             }
         }
 
+        //maximum numbers of sessions of a teacher in a week
         foreach ($teachers as $teacher) {
             $teacherSessionMax[$teacher->id] = $teacher->no_of_session_per_week;
         }
 
+        //combinations of classes
         foreach ($combinations as $comb) {
             if(empty($classCombinationsArr[$comb->class_room_id])) {
                 $classCombinationsArr[$comb->class_room_id] = [];
@@ -204,34 +212,45 @@ class TimetableController extends Controller
             array_push($classCombinationsArr[$comb->class_room_id], $comb->id);
         }
 
+        //iterating class rooms for timetable generation
         foreach ($classRooms as $classRoom) {
             $kgFirstCombination[$classRoom->id] = "";
             $kgFirstTeacher[$classRoom->id]     = "";
 
+            //iterating sessions for timetable generation
             foreach ($sessions as $session) {
                 $loopCount  = 0;
                 do {
-                    //considering 2 sessions as 1 for kg classes
-                    if(($classRoom->standard->level < 3) && (($session->id % 2) == 0) && !empty($kgFirstCombination[$classRoom->id])) {
+                    $loopFlag   = true;
+                    $loopCount  = $loopCount + 1;
+
+                    //inserting previous session as current session. considering 2 sessions as 1 for kg classes
+                    if(($classRoom->standard->level <= $doubleSessionLevel) && (($session->session_index % 2) == 0) && (!empty($kgFirstCombination[$classRoom->id]))) {
                         $timetableArray[] = [
                                 'session_id'        => $session->id,
                                 'combination_id'    => $kgFirstCombination[$classRoom->id],
                                 'status'            => 1
                             ];
 
-                        $sessionTeacher[$session->id][$kgFirstTeacher[$classRoom->id]] = $classRoom->id;
-                        $sessionClassRoom[$session->id][$classRoom->id] = $kgFirstTeacher[$classRoom->id];
+                        //assigning class to teacher and teacher for class
+                        $sessionTeacher[$session->id][$kgFirstTeacher[$classRoom->id]]  = $classRoom->id;
+                        $sessionClassRoom[$session->id][$classRoom->id]                 = $kgFirstTeacher[$classRoom->id];
+
                         $kgFirstCombination[$classRoom->id] = "";
                         $kgFirstTeacher[$classRoom->id]     = "";
                     } else {
-                        $loopFlag   = true;
-                        $loopCount  = $loopCount + 1;
                         //selecting a random combination of the current class
                         $randomCombinationIndex = array_rand($classCombinationsArr[$classRoom->id]);
-                        $randomCombinationId    = $classCombinationsArr[$classRoom->id][$randomCombinationIndex]; //print_r($randomCombinationId."<br>");
+                        $randomCombinationId    = $classCombinationsArr[$classRoom->id][$randomCombinationIndex];
                         $combination = $combinations[$randomCombinationId-1];
 
-                        if(($combination->id == $prevcombination && $combination->id == $beforeprevcombination) || (((($session->id % $noOfSessionPerDay) == 1) || (($session->id % $noOfSessionPerDay) == 2)) && ($combination->subject->category_id) > 5)) {
+                        //avioding same combinations consecutively for more than 2 sessions
+                        if($combination->id == $prevcombination && $combination->id == $beforeprevcombination) {
+                            continue;
+                        }
+
+                        //avoiding extra curricular activities for 1 & 2 sessioons of the day
+                        if(($session->session_index == 1 || $session->id == 2) && ($combination->subject->category_id > $subjectCategoryLevel)) {
                             continue;
                         }
 
@@ -245,39 +264,63 @@ class TimetableController extends Controller
                         if(empty($teacherSessionCount[$combination->teacher_id])) {
                             $teacherSessionCount[$combination->teacher_id] = 0;
                         }
-                        
-                        if(empty($sessionTeacher[$session->id][$teacherId]) && empty($sessionClassRoom[$session->id][$classRoomId])) {
-                            if($noOfSessionPerWeek[$classRoom->standard->id][$subjectId] >= $classRoomSubjectCount[$classRoomId][$subjectId]) {
-                                if($teacherSessionMax[$teacherId] >= $teacherSessionCount[$teacherId]) {
-                                    $sessionTeacher[$session->id][$teacherId] = $classRoomId;
-                                    $sessionClassRoom[$session->id][$classRoomId] = $teacherId;
-                                    $classRoomSubjectCount[$classRoomId][$subjectId] = $classRoomSubjectCount[$classRoomId][$subjectId] + 1;
-                                    $teacherSessionCount[$teacherId] = $teacherSessionCount[$teacherId] + 1;
 
-                                    $timetableArray[] = [
-                                        'session_id'        => $session->id,
-                                        'combination_id'    => $combination->id,
-                                        'status'            => 1
-                                    ];
-                                    //considering 2 sessions as 1 for kg classes
-                                    if(($classRoom->standard->level < 3) && (($session->id % 2) != 0) && empty($kgFirstCombination[$classRoom->id])) {
-                                        $kgFirstCombination[$classRoom->id] = $combination->id;
-                                        $kgFirstTeacher[$classRoom->id]     = $teacherId;
-                                    }
-                                    //loop termination
-                                    $loopFlag   = false;
-                                    $loopCount  = 0;
-                                    $beforeprevcombination  = $prevcombination;
-                                    $prevcombination        = $combination->id;
-                                } else {
-                                    if (($key = array_search($combination->id, $classCombinationsArr[$classRoom->id])) !== false) {
-                                    unset($classCombinationsArr[$classRoom->id][$key]);
-                                }
-                                }
+                        //if maximum sessions of a teacher in a week exceeds
+                        if($teacherSessionMax[$teacherId] < $teacherSessionCount[$teacherId]) {
+                            if (($key = array_search($combination->id, $classCombinationsArr[$classRoom->id])) !== false) {
+                                unset($classCombinationsArr[$classRoom->id][$key]);
+                            }
+                            continue;
+                        }
+
+                        //if maximum sessions of a subject in a class per week exceeds
+                        if($noOfSessionPerWeek[$classRoom->standard->id][$subjectId] < $classRoomSubjectCount[$classRoomId][$subjectId]) {
+                            if (($key = array_search($combination->id, $classCombinationsArr[$classRoom->id])) !== false) {
+                                unset($classCombinationsArr[$classRoom->id][$key]);
+                            }
+                            continue;
+                        }
+
+                        //avoid current combination for kg classes if next session is available for class or teacher
+                        if(($classRoom->standard->level <= $doubleSessionLevel && $session->session_index != $noOfSessionPerDay && ($session->session_index % 2) != 0) && (!empty($sessionTeacher[($session->id)+1][$teacher]) || !empty($sessionClassRoom[($session->id)+1][$classRoomId]))) {
+                            continue;
+                        }
+                        
+                        //cheking for class engagement or teacher engagement
+                        if(empty($sessionTeacher[$session->id][$teacherId]) && empty($sessionClassRoom[$session->id][$classRoomId])) {
+                            //assigning class to teacher and teacher for class
+                            $sessionTeacher[$session->id][$teacherId]       = $classRoomId;
+                            $sessionClassRoom[$session->id][$classRoomId]   = $teacherId;
+
+                            //incrementing classroom - subject session count
+                            $classRoomSubjectCount[$classRoomId][$subjectId] = $classRoomSubjectCount[$classRoomId][$subjectId] + 1;
+                            //incrementing teacher session count
+                            $teacherSessionCount[$teacherId] = $teacherSessionCount[$teacherId] + 1;
+
+                            //values to timetable array
+                            $timetableArray[] = [
+                                'session_id'        => $session->id,
+                                'combination_id'    => $combination->id,
+                                'status'            => 1
+                            ];
+                            //considering 2 sessions as 1 for kg classes
+                            if(($classRoom->standard->level <= $doubleSessionLevel) && (($session->session_index % 2) != 0)) {
+                                $kgFirstCombination[$classRoom->id] = $combination->id;
+                                $kgFirstTeacher[$classRoom->id]     = $teacherId;
+                            }
+                            //loop termination
+                            $loopFlag   = false;
+                            $loopCount  = 0;
+
+                            //checkingif the session is not the last session of the day
+                            if($session->session_index != $noOfSessionPerDay) {
+                                //to avoid combination repeatation
+                                $beforeprevcombination  = $prevcombination;
+                                $prevcombination        = $combination->id;
                             } else {
-                                if (($key = array_search($combination->id, $classCombinationsArr[$classRoom->id])) !== false) {
-                                    unset($classCombinationsArr[$classRoom->id][$key]);
-                                }
+                                //avoiding combination repeataion exception for last session of the day
+                                $beforeprevcombination  = 0;
+                                $prevcombination        = 0;
                             }
                         }
                     }
