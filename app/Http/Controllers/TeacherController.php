@@ -25,7 +25,7 @@ class TeacherController extends Controller
         $categoryId         = $request->get('category_id');
         $description        = $request->get('description');
         $noOfSessionPerWeek = $request->get('no_of_session_per_week');
-        $teacherLevel       = $request->get('experience_level');
+        $teacherLevel       = $request->get('teacher_level');
 
         $teacher = new Teacher;
         $teacher->teacher_name              = $name;

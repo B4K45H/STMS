@@ -94,10 +94,11 @@
                             <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
-                                        <th>Date</th>
-                                        <th>Teacher Name</th>
-                                        <th>Action</th>
+                                        <th style="width: 6%;">#</th>
+                                        <th style="width: 32%;">Date</th>
+                                        <th style="width: 32%;">Teacher Name</th>
+                                        <th style="width: 15%;">Substitute</th>
+                                        <th style="width: 15%;">Delete</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -106,7 +107,28 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ Carbon\Carbon::parse($leave->leave_date)->format('d-m-Y') }}</td>
                                             <td>{{ $leave->teacher->teacher_name }}</td>
-                                            <td><a href="{{ route('substitution-register', ['leave_teacher_id' => $leave->teacher_id, 'sub_date' => Carbon\Carbon::parse($leave->leave_date)->format('d-m-Y')]) }}">Substitute</a></td>
+                                            <td>
+                                                <div class="col-md-12">
+                                                    <form action="{{ route('substitution-register') }}" method="get">
+                                                        <input type="hidden" name="leave_teacher_id" value="{{ $leave->teacher_id }}">
+                                                        <input type="hidden" name="sub_date" value="{{ Carbon\Carbon::parse($leave->leave_date)->format('d-m-Y') }}">
+                                                        <button type="submit" class="btn btn-block btn-success btn-flat">
+                                                            <i class="fa fa-recycle"> Substitute</i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="col-md-12">
+                                                    <form action="{{route('substitution-leave-deletion')}}" method="post" id="leave_deletion_form">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                        <input type="hidden" name="leave_id" value="{{ $leave->id }}">
+                                                        <button type="button" id="delete_leave_btn" class="btn btn-block btn-danger btn-flat">
+                                                            <i class="fa fa-trash"> Delete</i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -121,6 +143,33 @@
                 </div>
             </div>
         </div>
+        <!-- /.row (main row) -->
+        <div class="modal modal-danger" id="confirm_leave_delete_modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">
+                            <i class="fa fa-exclamation-circle"></i> Confirm Delete
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Are you sure to delete the selected leave record and related substitution records?
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Cancel</button>
+                        <button type="button" id="btn_leave_delete_modal_submit" class="btn btn-outline">Delete</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
     </section>
 </div>
 @endsection

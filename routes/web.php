@@ -69,7 +69,8 @@ Route::group(['middleware' => 'auth.check'], function () {
         
         //substitution - leave
         Route::get('/substitution/leave/register', 'LeaveController@leaveRegister')->name('substitution-leave-register');
-        Route::Post('/substitution/leave/register/action', 'LeaveController@leaveRegisterAction')->name('teacher-leave-register-action');
+        Route::post('/substitution/leave/register/action', 'LeaveController@leaveRegisterAction')->name('teacher-leave-register-action');
+        Route::post('/substitution/leave/deletion', 'LeaveController@leaveDeletion')->name('substitution-leave-deletion');
 
         //substitution
         Route::get('/substitution/register', 'SubstitutionController@substitution')->name('substitution-register');

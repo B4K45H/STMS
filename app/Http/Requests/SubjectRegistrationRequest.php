@@ -42,7 +42,7 @@ class SubjectRegistrationRequest extends FormRequest
     public function rules()
     {
         return [
-            'subject_name'              => 'required|max:5|unique:subjects',
+            'subject_name'              => 'required|max:50|unique:subjects',
             'subject_category_id'       => [
                                                 'required',
                                                 'integer',

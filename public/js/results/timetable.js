@@ -23,6 +23,12 @@ $(function () {
         $('#confirm_modal').modal('show');
     });
 
+    //invoke modal for confirmation
+    $('body').on("click", "#delete_leave_btn", function (e) {
+        e.preventDefault();
+        $('#confirm_leave_delete_modal').modal('show');
+    });
+
     //clear classroom selection on teacher selection
     $('body').on("change", "#substitution_teacher_id", function () {
         var teacherId = $('#substitution_teacher_id').val();
@@ -41,7 +47,7 @@ $(function () {
         }
     });
 
-    //invoke modal for confirmation
+    //submit form on confirmation
     $('body').on("click", "#btn_modal_submit", function (e) {
         e.preventDefault();
         var captchaMessage  = $('#captcha_message').val();
@@ -56,6 +62,12 @@ $(function () {
         } else {
             alert("Invalid captcha!");
         }
+    });
+
+    //submit form on confirmation
+    $('body').on("click", "#btn_leave_delete_modal_submit", function (e) {
+        e.preventDefault();
+        $('#leave_deletion_form').submit();
     });
 });
 //function to generate random strings

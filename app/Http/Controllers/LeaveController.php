@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Leave;
+use App\Models\Substitution;
 use App\Models\Teacher;
 use App\Http\Requests\LeaveRegistrationRequest;
 
@@ -54,5 +55,27 @@ class LeaveController extends Controller
         } else {
             return redirect()->back()->withInput()->with("message","Failed to save the leave details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
         }
+    }
+
+    /**
+     * Action for leave deletion
+     */
+    public function leaveDeletion(Request $request)
+    {
+        $leaveId      = $request->get('leave_id');
+        if(!empty($leaveId)) {
+            $leave = Leave::where('status', 1)->where('id', $leaveId)->first();
+            if(!empty($leave) && !empty($leave->id)) {
+                $substitutionDate   = $leave->leave_date;
+                $leaveTeacherId     = $leave->teacher_id;
+
+                if($leave->update(['status' => 0])) {
+                    $updateSub = Substitution::where('status', 1)->where('substitution_date', $substitutionDate)
+                                ->where('leave_teacher_id', $leaveTeacherId)->update(['status' => 0]);
+                    return redirect(route('substitution-leave-register'))->with("message", "Leave record and related substitutions are deleted successfully.")->with("alert-class", "alert-success");
+                }
+            }
+        }
+        return redirect()->back()->with("message", "Failed to delete the leave record. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
     }
 }

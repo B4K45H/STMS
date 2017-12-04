@@ -141,7 +141,7 @@
             </div>
         </div>
         <!-- /.row (main row) -->
-        <div class="modal" id="confirm_modal">
+        <div class="modal modal-warning" id="confirm_modal">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -151,34 +151,32 @@
                         <h4 class="modal-title" style="color: red;">Confirm Settings</h4>
                     </div>
                     <div class="modal-body">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">Captcha Message : <p class="pull-right">:</p></label>
-                                <div class="col-sm-7">
-                                    <input type="text" id="captcha_message" name="captcha_message" class="form-control" style="width: 100%; color: red; font-size:25px;" readonly>
-                                </div>
-                            </div><br><br>
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">Enter The Message <i style="color: red;">(Case sensitive)</i><p class="pull-right">:</p></label>
-                                <div class="col-sm-7">
-                                    <input type="text" id="user_captcha" name="user_captcha" class="form-control" style="width: 100%;">
-                                </div>
-                            </div><br><br>
-                            <div id="modal_warning">
-                                <div class="row">
-                                    <div class="col-sm-1"></div>
-                                    <div class="col-sm-10">
-                                        <p style="color: blue;">
-                                            <b><i>Please enter the character string as it is shown in the box above.</i></b>
-                                        </p>
-                                    </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Captcha Message : <p class="pull-right">:</p></label>
+                            <div class="col-sm-7">
+                                <input type="text" id="captcha_message" name="captcha_message" class="form-control" style="width: 100%; color: red; font-size:25px;" readonly>
+                            </div>
+                        </div><br><br>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Enter The Message <i style="color: maroon;">(Case sensitive)</i><p class="pull-right">:</p></label>
+                            <div class="col-sm-7">
+                                <input type="text" id="user_captcha" name="user_captcha" class="form-control" style="width: 100%;">
+                            </div>
+                        </div><br><br>
+                        <div id="modal_warning">
+                            <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-10">
+                                    <p style="color: blue;">
+                                        <b><i>Please enter the character string as it is shown in the box above.</i></b>
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancel</button>
-                        <button type="button" id="btn_modal_submit" class="btn btn-primary" style="color: red;">Confirm</button>
+                        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Cancel</button>
+                        <button type="button" id="btn_modal_submit" class="btn btn-outline">Confirm</button>
                     </div>
                 </div>
                 <!-- /.modal-content -->
