@@ -104,7 +104,11 @@
                                             <th style="width: 12%;"></th>
                                             @for($i=1; $i <=$noOfSession; $i++)
                                                 <th style="width: {{ 88/$noOfSession }}%;">
-                                                    <b>{{ !empty($sessionTime[$i]) ? ($sessionTime[$i]->from_time. " - ". $sessionTime[$i]->to_time) : $i }}</b>
+                                                    <b>
+                                                        @if(!empty($sessionTime[$i]))
+                                                            {{ DateTime::createFromFormat('H:i:s', $sessionTime[$i]->from_time)->format('H:i'). " - ". DateTime::createFromFormat('H:i:s', $sessionTime[$i]->to_time)->format('H:i') }}
+                                                        @endif
+                                                    </b>
                                                 </th>
                                             @endfor
                                         </tr>
