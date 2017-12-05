@@ -34,6 +34,12 @@ Route::group(['middleware' => 'auth.check'], function () {
     Route::get('/error/404', 'LoginController@invalidUrl')->name('invalid-url');
     Route::get('/error/500', 'LoginController@serverError')->name('server-error');
 
+    //general timetable views
+    Route::get('/timetable/teacher', 'TimetableController@teacherLevel')->name('timetable-teacher');
+    Route::get('/timetable/student', 'TimetableController@studentLevel')->name('timetable-student');
+    //substituted timetable
+    Route::get('/substitution/temp/timetable', 'SubstitutionController@substitutedTimetable')->name('substituted-timetable');
+
     //superadmin routes
     Route::group(['middleware' => ['user.role:0,,']], function () {
         Route::get('/user/register', 'UserController@register')->name('user-register');
@@ -42,7 +48,7 @@ Route::group(['middleware' => 'auth.check'], function () {
     });
 
     //admin routes
-    Route::group(['middleware' => ['user.role:1,,']], function () {
+    Route::group(['middleware' => ['user.role:0,1,']], function () {
         //subject
         Route::get('/subject/register', 'SubjectController@register')->name('subject-register');
         Route::post('/subject/register/action', 'SubjectController@registerAction')->name('subject-register-action');
@@ -61,11 +67,11 @@ Route::group(['middleware' => 'auth.check'], function () {
         Route::get('/get/subjects/standard/{id}', 'ClassRoomController@getSubjectsByStandard')->name('get-subjects-by-standard');
 
         //timetable
-        Route::get('/timetable/teacher', 'TimetableController@teacherLevel')->name('timetable-teacher');
-        Route::get('/timetable/student', 'TimetableController@studentLevel')->name('timetable-student');
         Route::get('/timetable/settings', 'TimetableController@settings')->name('timetable-settings');
         Route::post('/timetable/settings/action', 'TimetableController@settingsAction')->name('timetable-settings-action');
         Route::post('/timetable/generate/action', 'TimetableController@generateTimetableAction')->name('timetable-generation-action');
+        //time settings
+        Route::post('/timetable/time/settings/action', 'TimetableController@timeSettingsAction')->name('timetable-time-settings-action');
         
         //substitution - leave
         Route::get('/substitution/leave/register', 'LeaveController@leaveRegister')->name('substitution-leave-register');
@@ -75,6 +81,5 @@ Route::group(['middleware' => 'auth.check'], function () {
         //substitution
         Route::get('/substitution/register', 'SubstitutionController@substitution')->name('substitution-register');
         Route::post('/substitution/register/action', 'SubstitutionController@substitutionAction')->name('substitution-register-action');
-        Route::get('/substitution/temp/timetable', 'SubstitutionController@substitutedTimetable')->name('substituted-timetable');
     });
 });

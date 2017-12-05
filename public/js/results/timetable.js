@@ -12,6 +12,13 @@ $(function () {
         autoclose: true,
     });
 
+    //Timepicker
+    $(".timepicker").timepicker({
+        minuteStep : 1,
+        showInputs : false,
+        showMeridian : true
+    });
+
     //Initialize Select2 Element for teacher select box
     $(".select_2").select2({
         minimumResultsForSearch: 5

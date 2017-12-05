@@ -87,7 +87,9 @@
                                             <tr>
                                                 <th style="width: 12%;"></th>
                                                 @for($i=1; $i <=$noOfSession; $i++)
-                                                    <th style="width: {{ 88/$noOfSession }}%;"><b>{{ $i }}</b></th>
+                                                    <th style="width: {{ 88/$noOfSession }}%;">
+                                                        <b>{{ !empty($sessionTime[$i]) ? ($sessionTime[$i]->from_time. " - ". $sessionTime[$i]->to_time) : $i }}</b>
+                                                    </th>
                                                 @endfor
                                             </tr>
                                         </thead>

@@ -11,6 +11,7 @@ use App\Models\Timetable;
 use App\Models\Leave;
 use App\Models\ClassRoom;
 use App\Models\Substitution;
+use App\Models\SessionTime;
 use App\Http\Requests\SubstitutionRegistrationRequest;
 
 class SubstitutionController extends Controller
@@ -173,6 +174,7 @@ class SubstitutionController extends Controller
     {
         $substitutions      = [];
         $timetable          = [];
+        $sessionTime        = [];
         $teacherName        = "";
         $classRoomName      = "";
         $substitutionDate   = $request->get('substitution_date');
@@ -216,11 +218,16 @@ class SubstitutionController extends Controller
         $classRooms     = ClassRoom::where('status', 1)->with(['standard', 'division'])->get();
         $settings       = Settings::where('status', 1)->first();
         $sessions       = Session::where('status', 1)->where('day_index', $dayIndex)->get();
+        $timeSessions   = SessionTime::where('status', 1)->get();
 
         if(!empty($settings) && !empty($settings->id)) {
             $noOfSessionPerDay  = $settings->session_per_day;
         } else {
             $noOfSessionPerDay  = 0;
+        }
+
+        foreach ($timeSessions as $key => $timeSession) {
+            $sessionTime[$timeSession->session_index] = $timeSession;
         }
 
         return view('substitution.substituted-timetable',[
@@ -234,7 +241,8 @@ class SubstitutionController extends Controller
                 'substitutionDate'  => $substitutionDate,
                 'substitutions'     => $substitutions,
                 'noOfSession'       => $noOfSessionPerDay,
-                'sessions'          => $sessions
+                'sessions'          => $sessions,
+                'sessionTime'       => $sessionTime,
                 ]);
     }
 }

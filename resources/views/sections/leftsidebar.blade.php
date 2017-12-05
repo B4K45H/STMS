@@ -159,6 +159,44 @@
                         </li>
                     </ul>
                 </li>
+            @elseif($currentUser->role == 2)
+                <li class="treeview {{ Request::is('timetable/*')? 'active' : '' }}">
+                    <a href="#">
+                        <i class="fa fa-calendar"></i>
+                        <span>Timetable</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="{{ Request::is('timetable/teacher')? 'active' : '' }}">
+                            <a href="{{ route('timetable-teacher') }}">
+                                <i class="fa fa-circle-o"></i> Teacher Level
+                            </a>
+                        </li>
+                        <li class="{{ Request::is('timetable/student')? 'active' : '' }}">
+                            <a href="{{ route('timetable-student') }}">
+                                <i class="fa fa-circle-o"></i> Student Level
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="treeview {{ Request::is('substitution/*')? 'active' : '' }}">
+                    <a href="#">
+                        <i class="fa fa-recycle"></i>
+                        <span>Substitution System</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="{{ Request::is('substitution/temp/timetable')? 'active' : '' }}">
+                            <a href="{{ route('substituted-timetable') }}">
+                                <i class="fa fa-circle-o"></i> Substituted Timetable
+                            </a>
+                        </li>
+                    </ul>
+                </li>
             @endif
         </ul>
     </section>

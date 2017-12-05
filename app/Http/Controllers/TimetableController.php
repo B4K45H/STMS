@@ -11,6 +11,10 @@ use App\Models\ClassRoom;
 use App\Models\Combination;
 use App\Models\Timetable;
 use App\Models\Standard;
+use App\Models\SessionTime;
+use App\Models\IntervalTime;
+use App\Http\Requests\TimeSettingsRegistrationRequest;
+use DateTime;
 
 class TimetableController extends Controller
 {
@@ -19,12 +23,15 @@ class TimetableController extends Controller
      */
     public function teacherLevel(Request $request)
     {
-        $selectedTeacherName = "";
-        $teacherId  = $request->get('teacher_id');
-        $settings   = Settings::where('status', 1)->first();
-        $teachers   = Teacher::where('status', 1)->get();
-        $sessions   = Session::where('status', 1)->get();
-        $timetable  = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($teacherId) {
+        $selectedTeacherName    = "";
+        $sessionTime            = [];
+
+        $teacherId      = $request->get('teacher_id');
+        $settings       = Settings::where('status', 1)->first();
+        $teachers       = Teacher::where('status', 1)->get();
+        $sessions       = Session::where('status', 1)->get();
+        $timeSessions   = SessionTime::where('status', 1)->get();
+        $timetable      = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($teacherId) {
                                 $qry->where('teacher_id', $teacherId);
                             })->with(['combination.classRoom.standard', 'combination.classRoom.division', 'combination.subject'])->get();
 
@@ -40,10 +47,15 @@ class TimetableController extends Controller
             $noOfSession = 0;
         }
 
+        foreach ($timeSessions as $key => $timeSession) {
+            $sessionTime[$timeSession->session_index] = $timeSession;
+        }
+
         return view('timetable.teacher-level', [
                 'selectedTeacherId'     => $teacherId,
                 'noOfSession'           => $noOfSession,
                 'sessions'              => $sessions,
+                'sessionTime'           => $sessionTime,
                 'selectedTeacherName'   => $selectedTeacherName,
                 'teachers'              => $teachers,
                 'timetable'             => $timetable
@@ -56,12 +68,16 @@ class TimetableController extends Controller
     public function studentLevel(Request $request)
     {
         $classRoomId    = $request->get('class_room_id');
+        $sessionTime    = [];
+
         $settings       = Settings::where('status', 1)->first();
         $classRooms     = ClassRoom::where('status', 1)->with(['standard', 'division'])->get();
         $sessions       = Session::where('status', 1)->get();
+        $timeSessions   = SessionTime::where('status', 1)->get();
         $timetable      = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($classRoomId) {
                                 $qry->where('class_room_id', $classRoomId);
                             })->with(['combination.subject', 'combination.teacher'])->get();
+        
         if(!empty($classRoomId)) {
             $selectedClassRoom  = ClassRoom::find($classRoomId);
             $selectedClassRoomName = ($selectedClassRoom->standard->standard_name. " - ". $selectedClassRoom->division->division_name);
@@ -75,10 +91,15 @@ class TimetableController extends Controller
             $noOfSession = 0;
         }
 
+        foreach ($timeSessions as $key => $timeSession) {
+            $sessionTime[$timeSession->session_index] = $timeSession;
+        }
+
         return view('timetable.student-level', [
                 'classRoomId'           => $classRoomId,
                 'noOfSession'           => $noOfSession,
                 'sessions'              => $sessions,
+                'sessionTime'           => $sessionTime,
                 'selectedClassRoomName' => $selectedClassRoomName,
                 'classRooms'            => $classRooms,
                 'timetable'             => $timetable
@@ -92,15 +113,18 @@ class TimetableController extends Controller
     {
         $noOfDays       = 0;
         $noOfSession    = 0;
+        $noOfInterval   = 0;
         $settings       = Settings::first();
 
         if(!empty($settings) && !empty($settings->id)) {
             $noOfDays       = $settings->working_days_in_week;
             $noOfSession    = $settings->session_per_day;
+            $noOfInterval   = $settings->no_of_intervals_per_day;
         }
         return view('timetable.settings', [
                 'noOfDays'      => $noOfDays,
-                'noOfSession'   => $noOfSession
+                'noOfSession'   => $noOfSession,
+                'noOfInterval'  => $noOfInterval
             ]);
     }
 
@@ -112,6 +136,7 @@ class TimetableController extends Controller
         $sessionArray   = [];
         $noOfDays       = $request->get('no_of_days');
         $noOfSession    = $request->get('no_of_session');
+        //$noOfInterval   = $request->get('no_of_intervals_per_day');
 
         $day        = [1 => 'Monday', 2 => 'Tuesday', 3=> 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday'];
         $session    = [1 => 'Mo', 2 => 'Tu', 3 => 'We', 4 => 'Th', 5 => 'Fr', 6 => 'Sa'];
@@ -135,9 +160,10 @@ class TimetableController extends Controller
         Settings::truncate();
 
         $settings = new Settings;
-        $settings->working_days_in_week = $noOfDays;
-        $settings->session_per_day      = $noOfSession;
-        $settings->status               = 1;
+        $settings->working_days_in_week     = $noOfDays;
+        $settings->session_per_day          = $noOfSession;
+        //$settings->no_of_intervals_per_day  = $noOfInterval;
+        $settings->status                   = 1;
         if($settings->save())
         {
             $session = Session::insert($sessionArray);
@@ -152,6 +178,60 @@ class TimetableController extends Controller
     }
 
     /**
+     * action for time settings
+     */
+    public function timeSettingsAction(TimeSettingsRegistrationRequest $request)
+    {
+        $noOfSession        = 0;
+        $noOfInterval       = 0;
+        $sessionTimeArr     = [];
+        $intervalTimeArr    = [];
+
+        $fromTimeSession    = $request->get('from_time');
+        $toTimeSession      = $request->get('to_time');
+        /*$prevSessionIndex   = $request->get('prev_session_index');
+        $intervalFromTime   = $request->get('interval_from_time');
+        $intervalToTime     = $request->get('interval_to_time');*/
+        
+        $settings       = Settings::where('status', 1)->first();
+        if(!empty($settings) && !empty($settings->id)) {
+            $noOfSession    = $settings->session_per_day;
+            //$noOfInterval   = $settings->no_of_intervals_per_day;
+        }
+
+        for ($i=1; $i <= $noOfSession; $i++) { 
+            $sessionTimeArr[] = [
+                'session_index' => $i,
+                'from_time'     => (DateTime::createFromFormat('H:i A', $fromTimeSession[$i])->format('H:i:s')),
+                'to_time'       => (DateTime::createFromFormat('H:i A', $toTimeSession[$i])->format('H:i:s')),
+                'status'        => 1
+            ];
+        }
+
+        /*for($j=1; $j < $noOfInterval; $j++) {
+            $intervalTimeArr[] = [
+                'previous_session_id'   => $prevSessionIndex[$j],
+                'from_time'             => (DateTime::createFromFormat('H:i A', $intervalFromTime[$j])->format('H:i:s')),
+                'to_time'               => (DateTime::createFromFormat('H:i A', $intervalToTime[$j])->format('H:i:s')),
+            ];
+        }*/
+
+        //delete all existing records
+        SessionTime::truncate();
+        //IntervalTime::truncate();
+
+        $sessionTimeFlag    = SessionTime::insert($sessionTimeArr);
+        //$intervalTimeFlag   = IntervalTime::insert($intervalTimeArr);
+
+        if($sessionTimeFlag/* && $intervalTimeFlag*/)
+        {
+            return redirect()->back()->with("message","Time Settings saved successfully")->with("alert-class","alert-success");
+        }
+        
+        return redirect()->back()->withInput()->with("message","Failed to save the time settings. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+    }
+
+    /**
      * action for timetable generation
      */
     public function generateTimetableAction()
@@ -160,6 +240,8 @@ class TimetableController extends Controller
         $doubleSessionLevel = 2;
         //subject categoy value to avoid in session 1 and 2 of the day
         $subjectCategoryLevel = 5;
+        //sessions which want to skip allocation
+        $skipSessions = [];
         // Get default request execution limit
         $normalTimeLimit = ini_get('max_execution_time');
 
@@ -219,6 +301,10 @@ class TimetableController extends Controller
 
             //iterating sessions for timetable generation
             foreach ($sessions as $session) {
+                //avoid setting timetable for exceptional sessions
+                if(in_array($session->id, $skipSessions)) {
+                    continue;
+                }
                 $loopCount  = 0;
                 do {
                     $loopFlag   = true;
@@ -250,7 +336,7 @@ class TimetableController extends Controller
                         }
 
                         //avoiding extra curricular activities for 1 & 2 sessioons of the day
-                        if(($session->session_index == 1 || $session->id == 2) && ($combination->subject->category_id > $subjectCategoryLevel)) {
+                        if(($session->session_index == 1 || $session->session_index == 2) && ($combination->subject->category_id > $subjectCategoryLevel)) {
                             continue;
                         }
 
