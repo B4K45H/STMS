@@ -38,10 +38,12 @@
                                         <tr>
                                             <th style="width: 2%;">#</th>
                                             <th style="width: 20%;">Name</th>
-                                            <th style="width: 10%;">Category</th>
-                                            <th style="width: 35%;">Description</th>
+                                            <th style="width: 16%;">Category</th>
+                                            <th style="width: 18%;">Description</th>
                                             <th style="width: 10%;">No of session per week</th>
-                                            <th style="width: 23%;">Experience Level</th>
+                                            <th style="width: 20%;">Experience Level</th>
+                                            <th style="width: 7%;"></th>
+                                            <th style="width: 7%;"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -62,14 +64,36 @@
                                                     <td>{{ !empty($teacher->description) ? $teacher->description : "Nil" }}</td>
                                                     <td>{{ $teacher->no_of_session_per_week }}</td>
                                                     @if($teacher->experience_level == 1)
-                                                        <td>Level A</td>
+                                                        <td>Pre Primary</td>
                                                     @elseif($teacher->experience_level == 2)
-                                                        <td>Level B</td>
+                                                        <td>Lower Primary</td>
                                                     @elseif($teacher->experience_level == 3)
-                                                        <td>Level C</td>
+                                                        <td>Upper Primary</td>
+                                                    @elseif($teacher->experience_level == 4)
+                                                        <td>High School</td>
                                                     @else
-                                                        <td>Level D</td>
+                                                        <td>Higher Secondary School</td>
                                                     @endif
+                                                        <td>
+                                                            <div class="col-md-12">
+                                                                <form action="{{ route('teacher-edit', ['teacher_id' => $teacher->id]) }}" method="get">
+                                                                    <button type="submit" class="btn btn-block btn-default btn-flat">
+                                                                        <i class="fa fa-edit"> Edit</i>
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="col-md-12">
+                                                                <form action="{{route('teacher-delete', ['teacher_id' =>$teacher->id])}}" method="post" id="leave_deletion_form">
+                                                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                                    {{-- <input type="hidden" name="teacher_id" value="{{ $teacher->id }}"> --}}
+                                                                    <button type="submit" id="delete_leave_btn" class="btn btn-block btn-default btn-flat">
+                                                                        <i class="fa fa-trash"> Delete</i>
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </td>
                                                 </tr>
                                             @endforeach
                                         @endif

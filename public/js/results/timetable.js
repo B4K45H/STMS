@@ -16,7 +16,8 @@ $(function () {
     $(".timepicker").timepicker({
         minuteStep : 1,
         showInputs : false,
-        showMeridian : true
+        showMeridian : true,
+        defaultTime: '09:00 AM'
     });
 
     //Initialize Select2 Element for teacher select box
@@ -54,7 +55,7 @@ $(function () {
         }
     });
 
-    //submit form on confirmation
+    //submit timetable generation form on confirmation
     $('body').on("click", "#btn_modal_submit", function (e) {
         e.preventDefault();
         var captchaMessage  = $('#captcha_message').val();
@@ -62,7 +63,11 @@ $(function () {
 
         if(captchaMessage && userCaptcha) {
             if(captchaMessage == userCaptcha) {
+                $("#btn_modal_submit").prop("disabled", true);
                 $('#timetable_generate_form').submit();
+                $("#confirm_modal").modal("hide");
+                $("#wait_modal").modal("show");
+                changeMessage();
             } else {
                 alert("Invalid captcha!");
             }
@@ -85,4 +90,27 @@ function randomString(length, chars) {
         result += chars[Math.floor(Math.random() * chars.length)];
     }
     return result;
+}
+
+//function to show messages one by one in modal
+function changeMessage() {
+    var countFlag = 1;
+    setInterval(function() {
+        if(countFlag == 1) {
+            $("#wait_modal_message_1").hide();
+            $("#wait_modal_message_2").show();
+            $("#wait_modal_message_3").hide();
+            countFlag = 2;
+        } else if(countFlag == 2) {
+            $("#wait_modal_message_1").hide();
+            $("#wait_modal_message_2").hide();
+            $("#wait_modal_message_3").show();
+            countFlag = 3;
+        } else {
+            $("#wait_modal_message_1").show();
+            $("#wait_modal_message_2").hide();
+            $("#wait_modal_message_3").hide();
+            countFlag = 1;
+        }
+    }, 4000 );
 }

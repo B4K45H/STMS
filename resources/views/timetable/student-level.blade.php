@@ -91,6 +91,8 @@
                                                         <b>
                                                             @if(!empty($sessionTime[$i]))
                                                                 {{ DateTime::createFromFormat('H:i:s', $sessionTime[$i]->from_time)->format('H:i'). " - ". DateTime::createFromFormat('H:i:s', $sessionTime[$i]->to_time)->format('H:i') }}
+                                                            @else
+                                                                {{ $i }}
                                                             @endif
                                                         </b>
                                                     </th>

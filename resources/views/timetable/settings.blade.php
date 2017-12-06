@@ -21,32 +21,26 @@
                 </h4>
             </div>
         @endif
-        <div class="row no-print">
-            <div class="col-md-1"></div>
-            <div class="col-md-10">
-                <div class="callout callout-warning">
-                    <i  style="color: red;" class="fa fa-exclamation-circle">&emsp;<b><i> Warning</i></b></i>
-                    <br><br>
-                    <ul>
-                        <li>
-                            <b style="color: maroon;">&emsp;Any changes to the current settings would invalidate the current timetable.</b>
-                        </li>
-                        <li>
-                            <b style="color: maroon;">&emsp;Generating new timetable would delete the existing timetable and generate the new one.</b>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
         <!-- Main row -->
         <div class="row  no-print">
             <div class="col-md-12">
             <div class="col-md-2"></div>
             <div class="col-md-8">
+                <div class="row no-print">
+                    <div class="col-md-12">
+                        <div class="callout callout-warning">
+                            <h4>
+                                <i class="fa fa-exclamation-circle">&emsp;<b>Warning</b></i>
+                            </h4>
+                            <h5>
+                                <b>&emsp;Any updation to the current session settings would invalidate the existing timetable.</b>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
                 <div class="box box-primary">
                     <div class="box-header with-border">
                         <h3 class="box-title" style="float: left;">Session Settings</h3>
-                            <p>&emsp;&emsp;<b style="color: maroon;"><i class="fa fa-exclamation-triangle"></i> Proceed with caution.</b></p>
                     </div>
                     <!-- /.box-header -->
                     <!-- form start -->
@@ -107,7 +101,7 @@
                                     <button type="reset" class="btn btn-default btn-block btn-flat" tabindex="6">Clear</button>
                                 </div>
                                 <div class="col-xs-3">
-                                    <button type="submit" class="btn btn-primary btn-block btn-flat" tabindex="5">Submit</button>
+                                    <button type="submit" class="btn btn-primary btn-block btn-flat submit" tabindex="5">Submit</button>
                                 </div>
                                 <!-- /.col -->
                             </div><br>
@@ -130,7 +124,7 @@
                         <div class="box box-primary">
                             <div class="box-header with-border">
                                 <h3 class="box-title" style="float: left;">Session Time Settings</h3>
-                                    <p>&emsp;<b style="color: blue;">(All fields are mandatory.)</b></p>
+                                    <p>&emsp;(All fields are mandatory.)</b></p>
                             </div>
                             <!-- /.box-header -->
                             <div class="box-body">
@@ -154,22 +148,22 @@
                                                             <b>{{ $i }}</b>
                                                         </td>
                                                         <td>
-                                                            <div class="col-sm-12 {{ !empty($errors->first('from_time')) ? 'has-error' : '' }}">
+                                                            <div class="col-sm-12 {{ !empty($errors->first('from_time.'.$i)) ? 'has-error' : '' }}">
                                                                 <div class="bootstrap-timepicker">
-                                                                    <input type="text" class="form-control text-center timepicker" name="from_time[{{ $i }}]" id="from_time_{{ $i }}" placeholder="Time" value="{{ old('from_time') }}">
+                                                                    <input type="text" class="form-control text-center timepicker" name="from_time[{{ $i }}]" id="from_time_{{ $i }}" placeholder="Time" value="{{ !empty(old('from_time.'.$i)) ? old('from_time.'.$i) : ("") }}">
                                                                 </div>
-                                                                @if(!empty($errors->first('from_time')))
-                                                                    <p style="color: red;" >{{$errors->first('from_time')}}</p>
+                                                                @if(!empty($errors->first('from_time.'.$i)))
+                                                                    <p style="color: red;" >{{$errors->first('from_time.'. $i)}}</p>
                                                                 @endif
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="col-sm-12 {{ !empty($errors->first('to_time')) ? 'has-error' : '' }}">
+                                                            <div class="col-sm-12 {{ !empty($errors->first('to_time.'.$i)) ? 'has-error' : '' }}">
                                                                 <div class="bootstrap-timepicker">
-                                                                    <input type="text" class="form-control text-center timepicker" name="to_time[{{ $i }}]" id="to_time_{{ $i }}" placeholder="Time" value="{{ old('to_time') }}">
+                                                                    <input type="text" class="form-control text-center timepicker" name="to_time[{{ $i }}]" id="to_time_{{ $i }}" placeholder="Time" value="{{ old('to_time.'.$i) }}">
                                                                 </div>
-                                                                @if(!empty($errors->first('to_time')))
-                                                                    <p style="color: red;" >{{$errors->first('to_time')}}</p>
+                                                                @if(!empty($errors->first('to_time.'.$i)))
+                                                                    <p style="color: red;" >{{$errors->first('to_time.'.$i)}}</p>
                                                                 @endif
                                                             </div>
                                                         </td>
@@ -187,7 +181,7 @@
                                         <button type="reset" class="btn btn-default btn-block btn-flat" tabindex="6">Clear</button>
                                     </div>
                                     <div class="col-xs-3">
-                                        <button type="submit" class="btn btn-primary btn-block btn-flat" tabindex="5">Submit</button>
+                                        <button type="submit" class="btn btn-primary btn-block btn-flat submit" tabindex="5">Submit</button>
                                     </div>
                                     <!-- /.col -->
                                 </div><br>
@@ -273,10 +267,21 @@
             <div class="col-md-12">
             <div class="col-md-2"></div>
             <div class="col-md-8">
+                <div class="row no-print">
+                    <div class="col-md-12">
+                        <div class="callout callout-warning">
+                            <h4>
+                                <i class="fa fa-exclamation-circle">&emsp;<b>Warning</b></i>
+                            </h4>
+                            <h5>
+                                <b>&emsp;Generating new Timetable would completely delete the existing timetable and generate the new one. This action is irreversible!</b>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
                 <div class="box box-primary">
                     <div class="box-header with-border">
                         <h3 class="box-title" style="float: left;">Timetable Generation</h3>
-                            <p>&emsp;&emsp;<b style="color: maroon;"><i class="fa fa-exclamation-triangle"></i> Proceed with caution.</b></p>
                     </div>
                     <!-- /.box-header -->
                     <!-- form start -->
@@ -288,12 +293,19 @@
                                 <div class="row">
                                 <div class="col-md-1"></div>
                                     <div class="col-md-10">
-                                        <p style="color: blue;">&emsp;&emsp;<b>To generete the new timetable a confirmation dialoge would ask you for the captcha, fill them and click generate timetable button.</b></p>
+                                        <div class="info-box">
+                                            <div class="info-box-content">
+                                                <span class="info-box-text text-center">&emsp;</span>
+                                                <h5 class="text-info">To generete the new timetable, type the characters you see in the confirmation popup and click <b>Confirm </b>button.</h5>
+                                            </div>
+                                        </div>
                                     </div>
                                     <br><br>
                                     <div class="col-xs-4"></div>
                                     <div class="col-xs-4">
-                                        <button type="button" class="btn btn-primary btn-block btn-flat" id="timetable_generate_btn" tabindex="5" {{ empty($noOfSession) || empty($noOfDays) ? "disabled" : "" }}>Generate Timetable</button>
+                                        <button type="button" class="btn btn-primary btn-block btn-flat submit" id="timetable_generate_btn" tabindex="5" {{ empty($noOfSession) || empty($noOfDays) ? "disabled" : "" }}>
+                                            Generate Timetable
+                                        </button>
                                     </div>
                                     <!-- /.col -->
                                 </div><br>
@@ -305,42 +317,76 @@
             </div>
         </div>
         <!-- /.row (main row) -->
-        <div class="modal modal-warning" id="confirm_modal">
+        <div class="modal modal-warning" data-backdrop="static" data-keyboard="false" id="confirm_modal">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close modal_close_button" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                        <h4 class="modal-title" style="color: red;">Confirm Settings</h4>
+                        <h4 class="modal-title">
+                            <i class="fa fa-question-circle"> Confirm Action</i>
+                        </h4>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label class="col-sm-4 control-label">Captcha Message : <p class="pull-right">:</p></label>
+                            <label class="col-sm-5 control-label">Captcha Message : <p class="pull-right">:</p></label>
                             <div class="col-sm-7">
                                 <input type="text" id="captcha_message" name="captcha_message" class="form-control" style="width: 100%; color: red; font-size:25px;" readonly>
                             </div>
                         </div><br><br>
                         <div class="form-group">
-                            <label class="col-sm-4 control-label">Enter The Message <i style="color: maroon;">(Case sensitive)</i><p class="pull-right">:</p></label>
+                            <label class="col-sm-5 control-label">Enter The Message <i style="color: maroon;">(Case sensitive)</i><p class="pull-right">:</p></label>
                             <div class="col-sm-7">
                                 <input type="text" id="user_captcha" name="user_captcha" class="form-control" style="width: 100%;">
                             </div>
                         </div><br><br>
                         <div id="modal_warning">
                             <div class="row">
-                                <div class="col-sm-1"></div>
-                                <div class="col-sm-10">
-                                    <p style="color: blue;">
-                                        <b><i>Please enter the character string as it is shown in the box above.</i></b>
-                                    </p>
+                                <div class="col-md-1"></div>
+                                <div class="col-sm-11">
+                                    <h4>Are You Sure to delete existing timetable and generate new one?</h4>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-outline pull-left modal_close_button" data-dismiss="modal">Cancel</button>
                         <button type="button" id="btn_modal_submit" class="btn btn-outline">Confirm</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+        <div class="modal modal-default" data-backdrop="static" data-keyboard="false" id="wait_modal" style="background: url('/images/public/hour_glass.gif') no-repeat; background-position: center center; background-color: #000000;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: #000000; color: white;">
+                        <h4 class="modal-title">
+                            <div class='overlay'><i class='fa fa-hourglass-half fa-spin'></i>&emsp;Generating Timetable</div>
+                        </h4>
+                    </div>
+                    <div class="modal-body" style="background-color: #000000; color: white;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4 class="text-center" id="wait_modal_message_1">
+                                    <b>Processing...</b>
+                                </h4>
+                                <h4 class="text-center" id="wait_modal_message_2" hidden>
+                                    <b>Do not refresh the page or close the window.</b>
+                                </h4>
+                                <h4 class="text-center" id="wait_modal_message_3" hidden>
+                                    <b>Please wait, this might take several minutes.</b>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="background-color: #000000;">
+                        <h5 style="color: blue;" class="text-center">
+                            <b>You will be automatically redirected when completed.</b>
+                        </h5>
                     </div>
                 </div>
                 <!-- /.modal-content -->

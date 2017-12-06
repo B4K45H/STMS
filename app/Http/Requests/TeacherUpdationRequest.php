@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class TeacherRegistrationRequest extends FormRequest
+class TeacherUpdationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -42,7 +42,11 @@ class TeacherRegistrationRequest extends FormRequest
     public function rules()
     {
         return [
-            'teacher_name'              => 'required|max:50|unique:teachers',
+            'teacher_name'              => [
+                                                'required',
+                                                'max:50',
+                                                Rule::unique('teachers')->ignore($this->teacher_id),
+                                            ],
             'category_id'               => [
                                                 'required',
                                                 'integer',

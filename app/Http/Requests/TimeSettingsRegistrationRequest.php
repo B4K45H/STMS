@@ -25,12 +25,12 @@ class TimeSettingsRegistrationRequest extends FormRequest
     public function messages()
     {
         return [
-            'from_time.required'            => "The from time field is required.",
-            'to_time.required'              => "The to time field is required.",
-            'from_time.string'              => "The from time is invalid.",
-            'to_time.string'                => "The to time is invalid.",
-            'from_time.size'                => "The from time is invalid.",
-            'to_time.size'                  => "The to time is invalid.",
+            'from_time.*.required'          => "The from time field is required.",
+            'from_time.*.string'            => "The from time is invalid.",
+            'from_time.*.size'              => "The from time is invalid.",
+            'to_time.*.required'            => "The to time field is required.",
+            'to_time.*.string'              => "The to time is invalid.",
+            'to_time.*.size'                => "The to time is invalid.",
             /*'interval_from_time.required'   => "The interval from time field is required.",
             'interval_to_time.required'     => "The interval to time field is required.",
             'prev_session_index.required'   => "The previous session index field is required",
@@ -48,8 +48,8 @@ class TimeSettingsRegistrationRequest extends FormRequest
     public function rules()
     {
         return [
-            'from_time'             => 'required|string|size:8',
-            'to_time'               => 'required|string|size:8',
+            'from_time.*'           => 'required|string|size:8',
+            'to_time.*'             => 'required|string|size:8',
             /*'prev_session_index'    => 'required',
             'prev_session_index.*'  => [
                                             'required',
