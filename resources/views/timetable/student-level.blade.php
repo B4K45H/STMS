@@ -86,11 +86,11 @@
                                         <thead>
                                             <tr>
                                                 <th style="width: 12%;"></th>
-                                                @for($i=1; $i <=$noOfSession; $i++)
+                                                @for($i=1; $i <= $noOfSession; $i++)
                                                     <th style="width: {{ 88/$noOfSession }}%;">
                                                         <b>
                                                             @if(!empty($sessionTime[$i]))
-                                                                {{ DateTime::createFromFormat('H:i:s', $sessionTime[$i]->from_time)->format('H:i'). " - ". DateTime::createFromFormat('H:i:s', $sessionTime[$i]->to_time)->format('H:i') }}
+                                                                {{ DateTime::createFromFormat('H:i:s', $sessionTime[$i]->from_time)->format('h:i A'). " - ". DateTime::createFromFormat('H:i:s', $sessionTime[$i]->to_time)->format('h:i A') }}
                                                             @else
                                                                 {{ $i }}
                                                             @endif
@@ -101,7 +101,7 @@
                                         </thead>
                                         <tbody>
                                         @foreach($sessions as $index => $session)
-                                            @if( (($index +1)%$noOfSession) == 1)
+                                            @if($session->session_index == 1)
                                                 <tr>
                                                     <td><div style="height: 50px; overflow:auto;"><b>{{ $session->day_name }}</b></div></td>
                                             @endif
@@ -112,7 +112,7 @@
                                                     @endif
                                                 @endforeach
                                             </td>
-                                            @if( (($index +1)%$noOfSession) == 0)
+                                            @if($session->session_index == $noOfSession)
                                                 </tr>
                                             @endif
                                         @endforeach

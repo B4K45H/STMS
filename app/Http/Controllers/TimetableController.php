@@ -123,6 +123,7 @@ class TimetableController extends Controller
         $loopFlag               = true;
         $prevcombination        = 0;
         $beforeprevcombination  = 0;
+        $sessionCount           = 0;
         $kgFirstCombination     = [];
         $kgFirstTeacher         = [];
         $sessionTeacher         = [];
@@ -142,8 +143,14 @@ class TimetableController extends Controller
 
         if(!empty($settings) && !empty($settings->id)) {
             $noOfSessionPerDay  = $settings->session_per_day;
+            $noOfDays           = $settings->working_days_in_week;
         } else {
             $noOfSessionPerDay  = 0;
+        }
+
+        $sessionCount = Session::where('status', 1)->count();
+        if(!empty($sessionCount) && $sessionCount > 0 && $sessionCount == ($noOfSessionPerDay * $noOfDays)) {
+            return redirect()->back()->withInput()->with("message","Failed to generate the timetable due to invalid Settings.!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
         }
 
         //maximum number of sessions of a subject in a class/week
@@ -299,7 +306,9 @@ class TimetableController extends Controller
 
         if($timetable) {
             // Restore to default request execution limit
-            ini_set('max_execution_time', $normalTimeLimit); 
+            ini_set('max_execution_time', $normalTimeLimit);
+            //setting settings flag
+            $settings->time_table_status = 1;
 
             return redirect()->back()->withInput()->with("message","Timetable generated successfully")->with("alert-class","alert-success");
         } else {
