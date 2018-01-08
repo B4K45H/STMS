@@ -146,11 +146,12 @@ class TimetableController extends Controller
             $noOfDays           = $settings->working_days_in_week;
         } else {
             $noOfSessionPerDay  = 0;
+            $noOfDays           = 0;
         }
 
         $sessionCount = Session::where('status', 1)->count();
         if(empty($sessionCount) || $sessionCount <= 0 || ($sessionCount != ($noOfSessionPerDay * $noOfDays))) {
-            return redirect()->back()->withInput()->with("message","Failed to generate the timetable due to invalid Settings.!")->with("alert-class","alert-danger");
+            return redirect()->back()->withInput()->with("message","Failed to generate the timetable due to invalid session Settings. Regenerate session settings!")->with("alert-class","alert-danger");
         }
 
         //maximum number of sessions of a subject in a class/week
