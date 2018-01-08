@@ -43,7 +43,7 @@ class LeaveController extends Controller
         $leaveFlag  = Leave::where('leave_date', $leaveDate)->where('teacher_id', $teacherId)->first();
 
         if(!empty($leaveFlag) && !empty($leaveFlag->id)) {
-            return redirect()->back()->withInput()->with("message","Error! Leave for the teacher, ". $teacherName. " on ". $msgLeaveDate." is already registered!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+            return redirect()->back()->withInput()->with("message","Error! Leave for the teacher, ". $teacherName. " on ". $msgLeaveDate." is already registered!")->with("alert-class","alert-danger");
         }
 
         $leave = new Leave;
@@ -53,7 +53,7 @@ class LeaveController extends Controller
         if($leave->save()) {
             return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
         } else {
-            return redirect()->back()->withInput()->with("message","Failed to save the leave details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+            return redirect()->back()->withInput()->with("message","Failed to save the leave details. Try again after reloading the page!")->with("alert-class","alert-danger");
         }
     }
 
@@ -76,6 +76,6 @@ class LeaveController extends Controller
                 }
             }
         }
-        return redirect()->back()->with("message", "Failed to delete the leave record. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+        return redirect()->back()->with("message", "Failed to delete the leave record. Try again after reloading the page!")->with("alert-class","alert-danger");
     }
 }

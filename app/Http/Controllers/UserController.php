@@ -60,7 +60,7 @@ class UserController extends Controller
         if($user->save()) {
             return redirect()->back()->with("message","Successfully saved.")->with("alert-class","alert-success");
         } else {
-            return redirect()->back()->withInput()->with("message","Failed to save the user details. Try again after reloading the page!<small class='pull-right'> #08/01</small>")->with("alert-class","alert-danger");
+            return redirect()->back()->withInput()->with("message","Failed to save the user details. Try again after reloading the page!")->with("alert-class","alert-danger");
         }
     }
 
@@ -114,10 +114,10 @@ class UserController extends Controller
             if($user->save()) {
                 return redirect()->back()->with("message","Successfully updated.")->with("alert-class","alert-success");
             } else {
-                return redirect()->back()->withInput()->with("message","Failed to update the user profile. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+                return redirect()->back()->withInput()->with("message","Failed to update the user profile. Try again after reloading the page!")->with("alert-class","alert-danger");
             }
         } else {
-            return redirect()->back()->withInput()->with("message","Current password is invaild!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+            return redirect()->back()->withInput()->with("message","Current password is invaild!")->with("alert-class","alert-danger");
         }
     }
 }

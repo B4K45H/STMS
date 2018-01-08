@@ -39,7 +39,7 @@ class TeacherController extends Controller
         if($teacher->save()) {
             return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
         } else {
-            return redirect()->back()->withInput()->with("message","Failed to save the teacher details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+            return redirect()->back()->withInput()->with("message","Failed to save the teacher details. Try again after reloading the page!")->with("alert-class","alert-danger");
         }
     }
 
@@ -71,7 +71,7 @@ class TeacherController extends Controller
                 ]);
         }
         
-        return redirect()->back()->with("message", "Something Went wrong, Selected record not found. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+        return redirect()->back()->with("message", "Something Went wrong, Selected record not found. Try again after reloading the page!")->with("alert-class","alert-danger");
     }
 
      /**
@@ -102,14 +102,14 @@ class TeacherController extends Controller
                     //invalidating the current timetable if major change is made
                     $settingsFlag = Settings::where('status', 1)->first();
                     if(!empty($settingsFlag) && !empty($settingsFlag->id)) {
-                        $settingsFlag->update(['status' => 0]);
+                        $settingsFlag->update(['time_table_status' => 0]);
                     }
                     return redirect(route('teacher-list'))->with("message","Updated successfully.&emsp;<b style='color:red'>Current timetable invalidated, due to resource change.</b>")->with("alert-class","alert-success");
                 }
                 return redirect(route('teacher-list'))->with("message","Updated successfully")->with("alert-class","alert-success");
             }
         }
-        return redirect()->back()->withInput()->with("message","Failed to update the teacher details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+        return redirect()->back()->withInput()->with("message","Failed to update the teacher details. Try again after reloading the page!")->with("alert-class","alert-danger");
     }
 
     /**
@@ -120,18 +120,19 @@ class TeacherController extends Controller
         $teacher = Teacher::where('status', 1)->where('id', $teacherId)->first();
         
         if(!empty($teacher) && !empty($teacher->id)) {
-            $teacher->status = 0;
+            $teacher->teacher_name  = $teacher->teacher_name."_deleted";
+            $teacher->status        = 0;
             if($teacher->save()) {
                 //invalidating the current timetable if major change is made
                 $settingsFlag = Settings::where('status', 1)->first();
                 if(!empty($settingsFlag) && !empty($settingsFlag->id)) {
-                    $settingsFlag->update(['status' => 0]);
+                    $settingsFlag->update(['time_table_status' => 0]);
                 }
 
                 return redirect(route('teacher-list'))->with("message", "Selected teacher record deleted successfully. Current timetable invalidated, due to resource change.&emsp;<b style='color:red'>Current timetable invalidated, due to resource change.</b>")->with("alert-class", "alert-success");
             }
         }
 
-        return redirect()->back()->with("message", "Failed to delete the teacher record. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+        return redirect()->back()->with("message", "Failed to delete the teacher record. Try again after reloading the page!")->with("alert-class","alert-danger");
     }
 }

@@ -17,19 +17,10 @@
         @if (Session::has('message'))
             <div class="alert {{ Session::get('alert-class', 'alert-info') }}" id="alert-message">
                 <h4>
-                  {!! Session::get('message') !!}
+                  {{ Session::get('message') }}
                 </h4>
             </div>
         @endif
-        {{-- @if (count($errors) > 0)
-            <div class="alert alert-danger" id="alert-message">
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif --}}
         @if (!empty($errors->first('teacher_id')))
             <div class="alert alert-danger" id="alert-message">
                 <ul>

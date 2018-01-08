@@ -42,7 +42,7 @@
             <div class="login-box-body" style="border: powderblue; border-style: solid; border-width: thin;">
                 <p class="login-box-msg">
                     @if(!empty(Session::get('expired-user')))
-                        Username : {!! Session::get('expired-user') !!}<br>
+                        Username : {{ Session::get('expired-user') }}<br>
                     @endif
                     Please contact the development team for more details.
                 </p>

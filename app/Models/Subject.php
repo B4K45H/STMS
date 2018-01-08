@@ -13,7 +13,7 @@ class Subject extends Model
      */
     public function standards()
     {
-        return $this->belongsToMany('App\Models\Standard');
+        return $this->belongsToMany('App\Models\Standard')->withPivot('no_of_session_per_week');
     }
 
     /**

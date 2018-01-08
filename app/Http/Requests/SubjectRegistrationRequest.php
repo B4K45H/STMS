@@ -31,6 +31,7 @@ class SubjectRegistrationRequest extends FormRequest
             'standard.required'                 => "Minimum one standard should be selected.",
             'standard.*.required'               => "Something went wrong. Please try again after reloading the page.",
             'no_of_session_per_week.*.required' => "No of sessions per week is required.",
+            'no_of_session_per_week.*.integer'  => "No of sessions per week should be integer.",
         ];
     }
 
@@ -42,7 +43,11 @@ class SubjectRegistrationRequest extends FormRequest
     public function rules()
     {
         return [
-            'subject_name'              => 'required|max:50|unique:subjects',
+            'subject_name'              => [
+                                                'required',
+                                                'max:50',
+                                                Rule::unique('subjects')->ignore($this->subject_id),
+                                            ],
             'subject_category_id'       => [
                                                 'required',
                                                 'integer',

@@ -10,6 +10,7 @@ use App\Models\Teacher;
 use App\Models\Subject;
 use App\Models\Combination;
 use App\Http\Requests\ClassRoomRegistrationRequest;
+use App\Http\Requests\ClassRoomUpdationRequest;
 
 class ClassRoomController extends Controller
 {
@@ -46,7 +47,7 @@ class ClassRoomController extends Controller
 
         $uniqueFlag = ClassRoom::where('standard_id', $standardId)->where('division_id', $divisionId)->first();
         if(!empty($uniqueFlag) || !empty($uniqueFlag->id)) {
-            return redirect()->back()->withInput()->with("message","Failed to save the class details. Standard - Division combination already exists!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+            return redirect()->back()->withInput()->with("message","Failed to save the class details. Standard - Division combination already exists!")->with("alert-class","alert-danger");
         }
 
         $standard = Standard::find($standardId);
@@ -54,7 +55,7 @@ class ClassRoomController extends Controller
             $subjects = $standard->subjects;
             foreach ($subjects as $key => $subject) {
                 if(empty($teacherId[$subject->id])) {
-                    return redirect()->back()->withInput()->with("message","Failed to save the class details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+                    return redirect()->back()->withInput()->with("message","Failed to save the class details. Try again after reloading the page!")->with("alert-class","alert-danger");
                 }
             }
         }
@@ -87,10 +88,10 @@ class ClassRoomController extends Controller
                 return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
             } else {
                 $classRoom->delete();
-                return redirect()->back()->withInput()->with("message","Failed to save the class details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+                return redirect()->back()->withInput()->with("message","Failed to save the class details. Try again after reloading the page!")->with("alert-class","alert-danger");
             }
         } else {
-            return redirect()->back()->withInput()->with("message","Failed to save the class details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+            return redirect()->back()->withInput()->with("message","Failed to save the class details. Try again after reloading the page!")->with("alert-class","alert-danger");
         }
     }
 
@@ -114,20 +115,10 @@ class ClassRoomController extends Controller
      */
     public function combinationList($classRoomId)
     {
-        $className      = '';
-        $combinations   = Combination::where('class_room_id', $classRoomId)->where('status', 1)->get();
-        if(empty($combinations) || count($combinations) == 0) {
-            session()->flash('message', 'No combinations available to show!');
-        }
+        $classRoom = ClassRoom::where('id', $classRoomId)->with(['combinations.subject', 'combinations.teacher'])->first();
 
-        $classRoom = ClassRoom::where('id', $classRoomId)->first();
-        if(!empty($classRoom) && !empty($classRoom->id)) {
-            $className = $classRoom->standard->standard_name. " - ". $classRoom->division->division_name;
-        }
-        
         return view('classroom.combination',[
-            'combinations' => $combinations,
-            'className'    =>  $className
+            'classRoom'  => $classRoom
         ]);
     }
 
@@ -150,5 +141,74 @@ class ClassRoomController extends Controller
         return([
             'flag'  => false,
             ]);
+    }
+
+    /**
+     * Return view for classroom editing
+     */
+    public function editClassroom($classRoomId)
+    {
+        $teachers   = Teacher::where('status', 1)->get();
+        $classRoom  = ClassRoom::where('status', 1)->where('id', $classRoomId)->first();
+
+        if(!empty($classRoom) && !empty($classRoom->id)) {
+            return view('classroom.edit', [
+                    'teachers'  => $teachers,
+                    'classRoom' => $classRoom
+                ]);
+        }
+
+        return redirect()->back()->with("message", "Something Went wrong, Selected record not found. Try again after reloading the page!")->with("alert-class","alert-danger");
+    }
+
+    /**
+     * Handle updation of class room
+     */
+    public function editClassroomAction(ClassRoomUpdationRequest $request)
+    {
+        $combinationArr = [];
+        $classRoomId        = $request->get('class_room_id');
+        $roomNumber         = $request->get('room_id');
+        $strength           = $request->get('strength');
+        $teacherInchargeId  = $request->get('teacher_incharge_id');        
+        $teacherId          = $request->get('teacher_id');
+
+        $classRoom = ClassRoom::find($classRoomId);
+        if(!empty($classRoom) && !empty($classRoom->id)) {
+            $subjects = $classRoom->standard->subjects;
+
+            foreach ($subjects as $key => $subject) {
+                if(empty($teacherId[$subject->id])) {
+                    
+                    return redirect()->back()->withInput()->with("message","Failed to update the class details. Try again after reloading the page!")->with("alert-class","alert-danger");
+                }
+            }
+        }
+
+        $classRoom->room_id     = $roomNumber;
+        $classRoom->strength    = $strength;
+        $classRoom->incharge_id = $teacherInchargeId;
+        $classRoom->status      = 1;
+        if($classRoom->save()) {
+            foreach ($subjects as $key => $subject) {                
+                $combinationArr[] = [
+                    'class_room_id' => $classRoom->id,
+                    'subject_id'    => $subject->id,
+                    'teacher_id'    => $teacherId[$subject->id],
+                    'status'        => 1
+                ];
+            }
+
+            //deleting existing combinations
+            Combination::where('class_room_id', $classRoom->id)->delete();
+
+            if(Combination::insert($combinationArr)) {
+                return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
+            } else {
+                return redirect()->back()->withInput()->with("message","Failed to update the class details. Try again after reloading the page!")->with("alert-class","alert-danger");
+            }
+        } else {
+            return redirect()->back()->withInput()->with("message","Failed to update the class details. Try again after reloading the page!")->with("alert-class","alert-danger");
+        }
     }
 }

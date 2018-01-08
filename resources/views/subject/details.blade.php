@@ -1,15 +1,15 @@
 @extends('layouts.app')
-@section('title', 'Subject - Teacher Combination')
+@section('title', 'Subject - Standard Combination')
 @section('content')
 <div class="content-wrapper">
      <section class="content-header">
         <h1>
-            Subject - Teacher
-            <small>Combination</small>
+            Subject - Standard
+            <small>Association</small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="{{ route('dashboard') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li class="active">Combination List</li>
+            <li class="active">Association List</li>
         </ol>
     </section>
     <!-- Main content -->
@@ -22,10 +22,10 @@
                 </h4>
             </div>
         @endif
-        @if(empty($classRoom) || empty($classRoom->combinations))
+        @if(empty($subject) || empty($subject->standards))
             <div class="alert alert-info" id="alert-message">
                 <h4>
-                  No combinations available to show!
+                  No associations available to show!
                 </h4>
             </div>
         @else
@@ -40,24 +40,30 @@
                             <div class="col-md-1"></div>
                             <div class="col-md-10">
                                 <div class="form-group">
-                                    <label for="classname" class="col-sm-2 control-label"><b>Class : </b></label>
+                                    <label for="classname" class="col-sm-2 control-label"><b>Subject : </b></label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="classname" placeholder="Class" value="{{ $classRoom->standard->standard_name }} {{ $classRoom->division->division_name }}" readonly>
+                                        <input type="text" class="form-control" id="classname" placeholder="Class" value="{{ $subject->subject_name }}" readonly>
                                     </div>
-                                    <label for="room_no" class="col-sm-2 control-label"><b>Room Number : </b></label>
+                                    <label for="category" class="col-sm-2 control-label"><b>Category : </b></label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="room_no" placeholder="Room Number" value="{{ $classRoom->room_id }}" readonly>
+                                        @if($subject->category_id == 1)
+                                            <input type="text" class="form-control" id="category" placeholder="Language" value="Language" readonly>
+                                        @elseif($subject->category_id == 2)
+                                            <input type="text" class="form-control" id="category" placeholder="Science" value="Science" readonly>
+                                        @elseif($subject->category_id == 6)
+                                            <input type="text" class="form-control" id="category" placeholder="Extra Curricular" value="Extra Curricular" readonly>
+                                        @elseif($subject->category_id == 7)
+                                            <input type="text" class="form-control" id="category" placeholder="Moral" value="Moral" readonly>
+                                        @else
+                                            <b>Error! Invalid</b>
+                                        @endif
                                     </div>
                                 </div>
                                 <br><br>
                                 <div class="form-group">
-                                    <label for="classname" class="col-sm-2 control-label"><b>Class Incharge: </b></label>
+                                    <label for="classname" class="col-sm-2 control-label"><b>Description: </b></label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="classname" placeholder="Class" value="{{ $classRoom->incharge->teacher_name }}" readonly>
-                                    </div>
-                                    <label for="room_no" class="col-sm-2 control-label"><b>Strength : </b></label>
-                                    <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="room_no" placeholder="Room Number" value="{{ $classRoom->strength }}" readonly>
+                                        <input type="text" class="form-control" id="classname" value="{{ $subject->description }}" readonly>
                                     </div>
                                 </div>
                                 <br><br>
@@ -66,16 +72,16 @@
                                         <thead>
                                             <tr>
                                                 <th style="width: 10%;">#</th>
-                                                <th style="width: 45%;">Subject</th>
-                                                <th style="width: 45%;">Teacher</th>
+                                                <th style="width: 45%;">Standard</th>
+                                                <th style="width: 45%;">No Of Session Per Week</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($classRoom->combinations as $index => $combination)
+                                            @foreach($subject->standards as $index => $standard)
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
-                                                    <td>{{ $combination->subject->subject_name }}</td>
-                                                    <td>{{ $combination->teacher->teacher_name }}</td>
+                                                    <td>{{ $standard->standard_name }}</td>
+                                                    <td>{{ $standard->pivot->no_of_session_per_week }}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -85,14 +91,19 @@
                                 <div class="row">
                                     <div class="col-xs-3"></div>
                                     <div class="col-xs-3">
-                                        <form action="{{ route('class-room-edit', ['class_room_id' => $classRoom->id]) }}" method="get">
+                                        <form action="{{ route('subject-edit', ['subject_id' => $subject->id]) }}" method="get">
                                             <button type="submit" class="btn btn-primary btn-block btn-flat submit-button">
                                                 <i class="fa fa-edit"> Edit</i>
                                             </button>
                                         </form>
                                     </div>
                                     <div class="col-xs-3">
-                                        <button type="submit" class="btn btn-primary btn-block btn-flat submit-button">Delete</button>
+                                        <form action="{{route('subject-delete', ['subject_id' =>$subject->id])}}" method="post">
+                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                            <button type="submit" id="delete_leave_btn" class="btn btn-primary btn-block btn-flat submit-button">
+                                                <i class="fa fa-trash"> Delete</i>
+                                            </button>
+                                        </form>
                                     </div>
                                     <!-- /.col -->
                                 </div><br>

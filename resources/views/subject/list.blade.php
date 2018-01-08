@@ -17,7 +17,7 @@
         @if (Session::has('message'))
             <div class="alert {{ Session::get('alert-class', 'alert-info') }}" id="alert-message">
                 <h4>
-                  {!! Session::get('message') !!}
+                  {{ Session::get('message') }}
                   <?php session()->forget('message'); ?>
                 </h4>
             </div>
@@ -36,11 +36,11 @@
                                 <table class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
-                                            <th style="width: 2%;">#</th>
-                                            <th style="width: 20%;">Name</th>
-                                            <th style="width: 10%;">Category</th>
-                                            <th style="width: 33%;">Description</th>
-                                            <th style="width: 35%;">Associated Standards</th>
+                                            <th style="width:5%;">#</th>
+                                            <th>Name</th>
+                                            <th>Category</th>
+                                            <th>Description</th>
+                                            <th>Details</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -53,20 +53,18 @@
                                                         <td>Language</td>
                                                     @elseif($subject->category_id == 2)
                                                         <td>Science</td>
-                                                    @elseif($subject->category_id == 3)
+                                                    @elseif($subject->category_id == 6)
                                                         <td>Extra Curricular</td>
-                                                    @else
+                                                    @elseif($subject->category_id == 7)
                                                         <td>Moral</td>
+                                                    @else
+                                                        <td>Error! Invalid</td>
                                                     @endif
                                                     <td>{{ !empty($subject->description) ? $subject->description : "Nil" }}</td>
                                                     <td>
-                                                        @foreach($subject->standards as $index => $standard)
-                                                            @if(($index+1) >= count($subject->standards))
-                                                                <b>{{ $standard->standard_name }}</b>
-                                                            @else
-                                                                <b>{{ $standard->standard_name }}</b>, 
-                                                            @endif
-                                                        @endforeach
+                                                        <a href="{{ route('subject-details', ['id'=> $subject->id]) }}">
+                                                            <button class="btn btn-block btn-default btn-flat">View</button>
+                                                        </a>
                                                     </td>
                                                 </tr>
                                             @endforeach

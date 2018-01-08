@@ -17,7 +17,7 @@
         @if (Session::has('message'))
             <div class="alert {{ Session::get('alert-class', 'alert-info') }}" id="alert-message">
                 <h4>
-                  {!! Session::get('message') !!}
+                  {{ Session::get('message') }}
                 </h4>
             </div>
         @endif
@@ -198,7 +198,7 @@
                                 <i class="fa fa-exclamation-circle">&emsp;<b>Warning</b></i>
                             </h4>
                             <h5>
-                                <b>&emsp;Generating new Timetable would completely delete the existing timetable and generate the new one. This action is irreversible!</b>
+                                <b>&emsp;Generating new Timetable would delete the existing timetable and generate the new one. This action is irreversible!</b>
                             </h5>
                         </div>
                     </div>

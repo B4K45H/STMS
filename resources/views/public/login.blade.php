@@ -4,14 +4,14 @@
 @if (Session::has('message'))
     <div class="alert {{ Session::get('alert-class', 'alert-info') }}" id="alert-message">
         <h4>
-            {!! Session::get('message') !!}
+            {{ Session::get('message') }}
         </h4>
     </div>
 @endif
 @if (Session::has('fixed-message'))
     <div class="alert {{ Session::get('fixed-alert-class', 'alert-info') }}" id="fixed-alert-message">
         <h4 style="margin-left: 20px;">
-            {!! Session::get('fixed-message') !!}
+            {{ Session::get('fixed-message') }}
         </h4>
     </div>
 @endif

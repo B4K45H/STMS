@@ -17,7 +17,7 @@
         @if (Session::has('message'))
             <div class="alert {{ Session::get('alert-class', 'alert-info') }}" id="alert-message">
                 <h4>
-                  {!! Session::get('message') !!}
+                  {{ Session::get('message') }}
                   <?php session()->forget('message'); ?>
                 </h4>
             </div>
@@ -51,9 +51,13 @@
                                                     <td>{{ $index + $classRooms->firstItem() }}</td>
                                                     <td>{{ $classroom->room_id }}</td>
                                                     <td>{{ $classroom->standard->standard_name }} - {{ $classroom->division->division_name }}</td>
-                                                    <td>{{ $classroom->incharge->name }}</td>
+                                                    <td>{{ $classroom->incharge->teacher_name }}</td>
                                                     <td>{{ $classroom->strength }}</td>
-                                                    <td><a href="{{ route('class-room-combination-list', ['id'=> $classroom->id]) }}">View More</a></td>
+                                                    <td>
+                                                        <a href="{{ route('class-room-combination-list', ['id'=> $classroom->id]) }}">
+                                                            <button class="btn btn-block btn-default btn-flat">View</button>
+                                                        </a>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         @endif

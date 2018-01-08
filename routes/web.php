@@ -1,4 +1,4 @@
-<?php
+                                                                                                                                                                                                                                                    <?php
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +53,7 @@ Route::group(['middleware' => 'auth.check'], function () {
         Route::get('/subject/register', 'SubjectController@register')->name('subject-register');
         Route::post('/subject/register/action', 'SubjectController@registerAction')->name('subject-register-action');
         Route::get('/subject/list', 'SubjectController@subjectList')->name('subject-list');
+        Route::get('/subject/details/{id}', 'SubjectController@details')->name('subject-details');
         Route::get('/subject/edit/{id}', 'SubjectController@editSubject')->name('subject-edit');
         Route::post('/subject/edit/action', 'SubjectController@editSubjectAction')->name('subject-edit-action');
         Route::post('/subject/delete/{id}', 'SubjectController@deleteSubject')->name('subject-delete');

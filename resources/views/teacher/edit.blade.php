@@ -17,7 +17,7 @@
         @if (Session::has('message'))
             <div class="alert {{ Session::get('alert-class', 'alert-info') }}" id="alert-message">
                 <h4>
-                  {!! Session::get('message') !!}
+                  {{ Session::get('message') }}
                 </h4>
             </div>
         @endif
@@ -32,7 +32,7 @@
                             <h4>
                                 <i class="fa fa-warning">&emsp;Warning!</i>
                             </h4>
-                            <h5>Updating the fields marked with<b style="color: red;"> # </b>would invalidate the current timetable.</h5>
+                            <h5>Updating the fields marked with<b style="color: blue;"> # </b>would invalidate the current timetable.</h5>
                         </div>
                     </div>
                 </div>
@@ -65,8 +65,8 @@
                                                 <option value="" {{ empty(old('category_id')) && empty($teacher->category_id) ? 'selected' : '' }}>Select teaching category</option>
                                                 <option value="1" {{ !empty(old('category_id')) ? (old('category_id')==1 ? 'selected' : '') : ($teacher->category_id == 1 ? 'selected' : '') }}>Language</option>
                                                 <option value="2" {{ !empty(old('category_id')) ? (old('category_id')==2 ? 'selected' : '') : ($teacher->category_id == 2 ? "selected" : "") }}>Science</option>
-                                                <option value="3" {{ !empty(old('category_id')) ? (old('category_id')==3 ? 'selected' : '') : ($teacher->category_id == 3 ? "selected" : "") }}>Extra Curricular</option>
-                                                <option value="4" {{ !empty(old('category_id')) ? (old('category_id')==4 ? 'selected' : '') : ($teacher->category_id == 4 ? "selected" : "") }}>Moral</option>
+                                                <option value="6" {{ !empty(old('category_id')) ? (old('category_id')==6 ? 'selected' : '') : ($teacher->category_id == 6 ? "selected" : "") }}>Extra Curricular</option>
+                                                <option value="7" {{ !empty(old('category_id')) ? (old('category_id')==7 ? 'selected' : '') : ($teacher->category_id == 7 ? "selected" : "") }}>Moral</option>
                                             </select>
                                             @if(!empty($errors->first('category_id')))
                                                 <p style="color: red;" >{{$errors->first('category_id')}}</p>
@@ -87,7 +87,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="name" class="col-sm-2 control-label"><b style="color: red;"># </b> No of Session per Week : </label>
+                                        <label for="name" class="col-sm-2 control-label"><b style="color: blue;"># </b> No of Session per Week : </label>
                                         <div class="col-sm-10 {{ !empty($errors->first('no_of_session_per_week')) ? 'has-error' : '' }}">
                                             <input type="text" name="no_of_session_per_week" class="form-control" id="no_of_session_per_week" placeholder="Number of sessions per week" value="{{ !empty(old('no_of_session_per_week')) ? old('no_of_session_per_week') : $teacher->no_of_session_per_week }}" tabindex="5">
                                             @if(!empty($errors->first('no_of_session_per_week')))
@@ -104,7 +104,7 @@
                                                 <option value="2" {{ !empty(old('teacher_level')) ? (old('teacher_level')==2 ? 'selected' : '') : ($teacher->teacher_level == 2 ? 'selected' : '') }}>Lower Primary</option>
                                                 <option value="3" {{ !empty(old('teacher_level')) ? (old('teacher_level')==3 ? 'selected' : '') : ($teacher->teacher_level == 3 ? 'selected' : '') }}>Upper Primary</option>
                                                 <option value="4" {{ !empty(old('teacher_level')) ? (old('teacher_level')==4 ? 'selected' : '') : ($teacher->teacher_level == 4 ? 'selected' : '') }}>High School</option>
-                                                <option value="5" {{ !empty(old('teacher_level')) ? (old('teacher_level')==5 ? 'selected' : '') : ($teacher->teacher_level == 5 ? 'selected' : '') }}>Higher Secondary School</option>
+                                                <option value="5" {{ !empty(old('teacher_level')) ? (old('teacher_level')==5 ? 'selected' : '') : ($teacher->teacher_level == 5 ? 'selected' : '') }}>Higher Secondary</option>
                                                 <option value="6" {{ !empty(old('teacher_level')) ? (old('teacher_level')==6 ? 'selected' : '') : ($teacher->teacher_level == 6 ? 'selected' : '') }}>All</option>
                                             </select>
                                             @if(!empty($errors->first('teacher_level')))

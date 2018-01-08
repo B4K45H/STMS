@@ -41,7 +41,7 @@ class SubstitutionController extends Controller
 
             //check & confirm, a leave teacher is substituted
             if(!in_array($teacherId, $leaveExcludeArr)) {
-                return redirect()->back()->withInput()->with("message","Selected teacher is not marked as absent for the selected date.!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+                return redirect()->back()->withInput()->with("message","Selected teacher is not marked as absent for the selected date.!")->with("alert-class","alert-danger");
             }
 
             $leavetimetable  = Timetable::where('status', 1)->whereHas('combination', function ($qry) use($teacherId) {
@@ -133,7 +133,7 @@ class SubstitutionController extends Controller
         $subDate    = date('Y-m-d', strtotime($subDate));
 
         if(empty(($combinationIds)) || count($combinationIds) <= 0) {
-            return redirect()->back()->withInput()->with("message","Failed to save the substitution details. Minimum one substitution is required.!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+            return redirect()->back()->withInput()->with("message","Failed to save the substitution details. Minimum one substitution is required.!")->with("alert-class","alert-danger");
         }
         foreach ($combinationIds as $sessionId => $combinationId) {
             if(!empty($combinationId)) {
@@ -151,7 +151,7 @@ class SubstitutionController extends Controller
             }
         }
         if($emptyCount >= count($combinationIds)) {
-            return redirect()->back()->withInput()->with("message","Failed to save the substitution details. Minimum one substitution is required.!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+            return redirect()->back()->withInput()->with("message","Failed to save the substitution details. Minimum one substitution is required.!")->with("alert-class","alert-danger");
         }
 
         //deleting existing substitution
@@ -163,7 +163,7 @@ class SubstitutionController extends Controller
                 'substitution_date'   => $substitutionDate,
                 ]))->with("message","Substitution saved successfully")->with("alert-class","alert-success");
         } else {
-            return redirect()->back()->withInput()->with("message","Failed to save the substitution details. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+            return redirect()->back()->withInput()->with("message","Failed to save the substitution details. Try again after reloading the page!")->with("alert-class","alert-danger");
         }
     }
 

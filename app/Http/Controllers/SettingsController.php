@@ -91,10 +91,10 @@ class SettingsController extends Controller
             if($session) {
                 return redirect()->back()->withInput()->with("message","Settings saved successfully")->with("alert-class","alert-success");
             } else {
-                return redirect()->back()->withInput()->with("message","Failed to save the settings. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+                return redirect()->back()->withInput()->with("message","Failed to save the settings. Try again after reloading the page!")->with("alert-class","alert-danger");
             }
         } else {
-            return redirect()->back()->withInput()->with("message","Failed to save the settings. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+            return redirect()->back()->withInput()->with("message","Failed to save the settings. Try again after reloading the page!")->with("alert-class","alert-danger");
         }
     }
 
@@ -150,6 +150,6 @@ class SettingsController extends Controller
             return redirect()->back()->with("message","Time Settings saved successfully")->with("alert-class","alert-success");
         }
         
-        return redirect()->back()->withInput()->with("message","Failed to save the time settings. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+        return redirect()->back()->withInput()->with("message","Failed to save the time settings. Try again after reloading the page!")->with("alert-class","alert-danger");
     }
 }

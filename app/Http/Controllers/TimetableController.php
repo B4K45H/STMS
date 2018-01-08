@@ -149,8 +149,8 @@ class TimetableController extends Controller
         }
 
         $sessionCount = Session::where('status', 1)->count();
-        if(!empty($sessionCount) && $sessionCount > 0 && $sessionCount == ($noOfSessionPerDay * $noOfDays)) {
-            return redirect()->back()->withInput()->with("message","Failed to generate the timetable due to invalid Settings.!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+        if(empty($sessionCount) || $sessionCount <= 0 || ($sessionCount != ($noOfSessionPerDay * $noOfDays))) {
+            return redirect()->back()->withInput()->with("message","Failed to generate the timetable due to invalid Settings.!")->with("alert-class","alert-danger");
         }
 
         //maximum number of sessions of a subject in a class/week
@@ -295,7 +295,7 @@ class TimetableController extends Controller
                     // Restore to default request execution limit
                     ini_set('max_execution_time', $normalTimeLimit); 
 
-                    return redirect()->back()->withInput()->with("message","Failed to generate the timetable. Not enough resources available as per the current settings. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+                    return redirect()->back()->withInput()->with("message","Failed to generate the timetable. Not enough resources available as per the current settings. Try again after reloading the page!")->with("alert-class","alert-danger");
                 }
             }
         }
@@ -315,7 +315,7 @@ class TimetableController extends Controller
             // Restore to default request execution limit
             ini_set('max_execution_time', $normalTimeLimit); 
 
-            return redirect()->back()->withInput()->with("message","Failed to generate the timetable. Try again after reloading the page!<small class='pull-right'> #00/00</small>")->with("alert-class","alert-danger");
+            return redirect()->back()->withInput()->with("message","Failed to generate the timetable. Try again!")->with("alert-class","alert-danger");
         }
         // Restore to default request execution limit
         ini_set('max_execution_time', $normalTimeLimit); 
