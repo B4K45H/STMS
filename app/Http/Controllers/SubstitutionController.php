@@ -32,6 +32,12 @@ class SubstitutionController extends Controller
         $leavetimetable         = [];
         $classCombinations      = [];
         $leaveTeacherName       = "";
+
+        $settings = Settings::where('status', 1)->where('time_table_status', 1)->first();
+
+        if(empty($settings)) {
+            return redirect(route('timetable-settings'))->with("message", "Settings/resources changed! Current timetable is invalid. Please regenerate timetable with new settings.")->with("alert-class", "alert-danger");
+        }
         
         if(!empty($substitutionDate) && !empty($substitutionDate)) {
             $timestamp      = strtotime($substitutionDate);
@@ -183,6 +189,12 @@ class SubstitutionController extends Controller
 
         $timestamp      = strtotime($substitutionDate);
         $dayIndex       = (date('w', $timestamp));
+
+        $settings = Settings::where('status', 1)->where('time_table_status', 1)->first();
+
+        if(empty($settings)) {
+            return redirect(route('timetable-settings'))->with("message", "Settings/resources changed! Current timetable is invalid. Please regenerate timetable with new settings.")->with("alert-class", "alert-danger");
+        }
         
         if(!empty($substitutionDate)) {
             $subDate = date('Y-m-d', strtotime($substitutionDate));

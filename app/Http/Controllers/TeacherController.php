@@ -37,6 +37,12 @@ class TeacherController extends Controller
         $teacher->teacher_level             = $teacherLevel;
         $teacher->status        = 1;
         if($teacher->save()) {
+            //invalidating the current timetable if major change is made
+            $settingsFlag = Settings::where('status', 1)->first();
+            if(!empty($settingsFlag) && !empty($settingsFlag->id)) {
+                $settingsFlag->update(['time_table_status' => 0]);
+            }
+            
             return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
         } else {
             return redirect()->back()->withInput()->with("message","Failed to save the teacher details. Try again after reloading the page!")->with("alert-class","alert-danger");
@@ -104,7 +110,7 @@ class TeacherController extends Controller
                     if(!empty($settingsFlag) && !empty($settingsFlag->id)) {
                         $settingsFlag->update(['time_table_status' => 0]);
                     }
-                    return redirect(route('teacher-list'))->with("message","Updated successfully.&emsp;<b style='color:red'>Current timetable invalidated, due to resource change.</b>")->with("alert-class","alert-success");
+                    return redirect(route('teacher-list'))->with("message","Updated successfully.Current timetable invalidated, due to resource change.")->with("alert-class","alert-success");
                 }
                 return redirect(route('teacher-list'))->with("message","Updated successfully")->with("alert-class","alert-success");
             }
@@ -129,7 +135,7 @@ class TeacherController extends Controller
                     $settingsFlag->update(['time_table_status' => 0]);
                 }
 
-                return redirect(route('teacher-list'))->with("message", "Selected teacher record deleted successfully. Current timetable invalidated, due to resource change.&emsp;<b style='color:red'>Current timetable invalidated, due to resource change.</b>")->with("alert-class", "alert-success");
+                return redirect(route('teacher-list'))->with("message", "Selected teacher record deleted successfully. Current timetable invalidated, due to resource change.Current timetable invalidated, due to resource change.")->with("alert-class", "alert-success");
             }
         }
 

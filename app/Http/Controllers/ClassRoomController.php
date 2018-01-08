@@ -9,6 +9,7 @@ use App\Models\ClassRoom;
 use App\Models\Teacher;
 use App\Models\Subject;
 use App\Models\Combination;
+use App\Models\Settings;
 use App\Http\Requests\ClassRoomRegistrationRequest;
 use App\Http\Requests\ClassRoomUpdationRequest;
 
@@ -45,7 +46,7 @@ class ClassRoomController extends Controller
         $teacherInchargeId  = $request->get('teacher_incharge_id');        
         $teacherId          = $request->get('teacher_id');
 
-        $uniqueFlag = ClassRoom::where('standard_id', $standardId)->where('division_id', $divisionId)->first();
+        $uniqueFlag = ClassRoom::where('standard_id', $standardId)->where('division_id', $divisionId)->where('status', 1)->first();
         if(!empty($uniqueFlag) || !empty($uniqueFlag->id)) {
             return redirect()->back()->withInput()->with("message","Failed to save the class details. Standard - Division combination already exists!")->with("alert-class","alert-danger");
         }
@@ -85,6 +86,11 @@ class ClassRoomController extends Controller
                 }*/
             }
             if(Combination::insert($combinationArr)) {
+                //invalidating the current timetable if major change is made
+                $settingsFlag = Settings::where('status', 1)->first();
+                if(!empty($settingsFlag) && !empty($settingsFlag->id)) {
+                    $settingsFlag->update(['time_table_status' => 0]);
+                }
                 return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
             } else {
                 $classRoom->delete();
@@ -179,7 +185,7 @@ class ClassRoomController extends Controller
 
             foreach ($subjects as $key => $subject) {
                 if(empty($teacherId[$subject->id])) {
-                    
+
                     return redirect()->back()->withInput()->with("message","Failed to update the class details. Try again after reloading the page!")->with("alert-class","alert-danger");
                 }
             }
@@ -198,6 +204,11 @@ class ClassRoomController extends Controller
                     'status'        => 1
                 ];
             }
+            //invalidating the current timetable if major change is made
+            $settingsFlag = Settings::where('status', 1)->first();
+            if(!empty($settingsFlag) && !empty($settingsFlag->id)) {
+                $settingsFlag->update(['time_table_status' => 0]);
+            }
 
             //deleting existing combinations
             Combination::where('class_room_id', $classRoom->id)->delete();
@@ -210,5 +221,25 @@ class ClassRoomController extends Controller
         } else {
             return redirect()->back()->withInput()->with("message","Failed to update the class details. Try again after reloading the page!")->with("alert-class","alert-danger");
         }
+    }
+
+    public function deleteClassroom($classRoomId)
+    {
+        $classRoom = ClassRoom::where('status', 1)->where('id', $classRoomId)->first();
+        
+        if(!empty($classRoom) && !empty($classRoom->id)) {
+            $classRoom->status        = 0;
+            if($classRoom->save()) {
+                //invalidating the current timetable if major change is made
+                $settingsFlag = Settings::where('status', 1)->first();
+                if(!empty($settingsFlag) && !empty($settingsFlag->id)) {
+                    $settingsFlag->update(['time_table_status' => 0]);
+                }
+
+                return redirect(route('subject-list'))->with("message", "Selected classroom record deleted successfully.Current timetable invalidated, due to resource change.")->with("alert-class", "alert-success");
+            }
+        }
+
+        return redirect()->back()->with("message", "Failed to delete the subject record. Try again after reloading the page!")->with("alert-class","alert-danger");
     }
 }

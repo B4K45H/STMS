@@ -49,6 +49,12 @@ class SubjectController extends Controller
                 ];
             }
             if($subject->standards()->sync($standardSubjectArr)) {
+                //invalidating the current timetable if major change is made
+                $settingsFlag = Settings::where('status', 1)->first();
+                if(!empty($settingsFlag) && !empty($settingsFlag->id)) {
+                    $settingsFlag->update(['time_table_status' => 0]);
+                }
+                
                 return redirect()->back()->with("message","Saved successfully")->with("alert-class","alert-success");
             } else {
                 $subject->delete();

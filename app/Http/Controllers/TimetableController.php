@@ -38,7 +38,7 @@ class TimetableController extends Controller
         } else {
             $selectedClassRoomName = "";
         }
-        if(!empty($settings) && !empty($settings->id)) {
+        if(!empty($settings) && $settings->time_table_status != 0) {
             $noOfSession = $settings->session_per_day;
         } else {
             $noOfSession = 0;
@@ -82,7 +82,7 @@ class TimetableController extends Controller
             $selectedClassRoomName = "";
         }
 
-        if(!empty($settings) && !empty($settings->id)) {
+        if(!empty($settings) && $settings->time_table_status != 0) {
             $noOfSession = $settings->session_per_day;
         } else {
             $noOfSession = 0;
@@ -308,7 +308,9 @@ class TimetableController extends Controller
             // Restore to default request execution limit
             ini_set('max_execution_time', $normalTimeLimit);
             //setting settings flag
+            $settings->status = 1;
             $settings->time_table_status = 1;
+            $settings->save();
 
             return redirect()->back()->withInput()->with("message","Timetable generated successfully")->with("alert-class","alert-success");
         } else {

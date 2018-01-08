@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Leave;
 use App\Models\Substitution;
 use App\Models\Teacher;
+use App\Models\Settings;
 use App\Http\Requests\LeaveRegistrationRequest;
 
 class LeaveController extends Controller
@@ -15,8 +16,13 @@ class LeaveController extends Controller
      */
     public function leaveRegister()
     {
+        $settings = Settings::where('status', 1)->where('time_table_status', 1)->first();
         $teachers   = Teacher::where('status', 1)->get();
         $leaves     = Leave::where('status', 1)->where('leave_date',">=",date('Y-m-d'))->paginate(10);
+
+        if(empty($settings)) {
+            return redirect(route('timetable-settings'))->with("message", "Settings/resources changed! Current timetable is invalid. Please regenerate timetable with new settings.")->with("alert-class", "alert-danger");
+        }
 
         return view('substitution.leave-register', [
                 'teachers'  => $teachers,
