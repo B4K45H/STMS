@@ -21,6 +21,7 @@ class SettingsController extends Controller
         $noOfSession    = 0;
         $sessionTimes   = [];
         $sessionStatus  = 0;
+        $timetableStatus = 0;
 
         $settings       = Settings::first();
         $timeSessions   = SessionTime::where('status', 1)->get();
