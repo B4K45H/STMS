@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="/css/dist/css/AdminLTE.min.css">
 <!-- AdminLTE Skins. Choose a skin from the css/skins
 folder instead of downloading all of them to reduce the load. -->
-<link rel="stylesheet" href="/css/dist/css/skins/skin-blue-light.min.css">
+<link rel="stylesheet" href="/css/dist/css/skins/skin-blue.min.css">
 <!-- Date Picker -->
 <link rel="stylesheet" href="/css/plugins/datepicker/datepicker3.css">
 <!-- Daterange picker -->
