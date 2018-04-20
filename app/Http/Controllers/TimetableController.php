@@ -136,9 +136,9 @@ class TimetableController extends Controller
 
         $settings               = Settings::where('status', 1)->first();
         $sessions               = Session::where('status', 1)->get();
-        $classRooms             = ClassRoom::where('status', 1)->with('standard')->get();
+        $classRooms             = ClassRoom::with('standard')->where('status', 1)->get();
         $combinations           = Combination::where('status', 1)->get();
-        $standards              = Standard::where('status', 1)->with('subjects')->get();
+        $standards              = Standard::with('subjects')->where('status', 1)->get();
         $teachers               = Teacher::where('status', 1)->get();
 
         if(!empty($settings) && !empty($settings->id)) {
@@ -301,7 +301,11 @@ class TimetableController extends Controller
             }
         }
         //delete all existing records
-        Timetable::truncate();
+        //Timetable::truncate();
+        Timetable::where('status', -1)->delete();
+        //update existing field - status  = 0
+        Timetable::where('status', 0)->update(['status' => -1]);
+        Timetable::where('status', 1)->update(['status' => 0]);
 
         $timetable = Timetable::insert($timetableArray);
 

@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Timetable extends Model
 {
-    protected $table = 'timetable';
+    protected $table    = 'timetable';
+    public $timestamps  = false;
+
     /**
      * Get the combination that owns the timetable entry.
      */
